@@ -2,16 +2,19 @@ import random
 from flask import Flask
 from tinydb import tinydb
 
+app = Flask(__name__)
 
-def main():
-    #login()
-    BlackJack()
-    Ruleta()
-    Slots()
-    #Poker()
-    HorseRaces()
+@app.route("/")
+def index():
+    return render_template("index.html")
 
+
+@app.route("/blackjack")
 def BlackJack():
+    return render_template("blackjack.html")
+
+@app.route("/blackjackGet")
+def getBlackjack():
     #DELJENJE KART
     #DEALER
     dealerCard1 = random.randrange("1, 12")
@@ -268,6 +271,10 @@ def horseRaces():
         print("YOU WIN")
     else:
         print("YOU LOST")
+
+app.run(debug = True)
+
+
 
 
 
