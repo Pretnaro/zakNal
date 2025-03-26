@@ -92,7 +92,7 @@ def getBlackjack():
                 else:
                     pass
                 choice2 = str(input("S = Stop, H = Another"))
-                if choice2  == "H"
+                if choice2  == "H":
                     pass
                 else:
                     break
@@ -105,7 +105,7 @@ def getBlackjack():
             yourCards += random.randrange("1, 12")
             if yourCards > 21:
                 print("BUST")
-            elif: 
+            else: 
                 #RETURN
                 yourCards
                 
@@ -169,7 +169,7 @@ def getBlackjack():
                     print("YOU WIN")
                 elif dealerCards > yourCards:
                     print("YOU LOST")
-        elif choice == "S"
+        elif choice == "S":
             while dealerCards < 16:
                 dealerCards += random.randrange("1, 12")
                 if dealerCards > 21:
@@ -204,80 +204,80 @@ def ruleta():
     #SPIN
     number = random.randrange(0,37)
     #NUMBER
-    if i == in numbers:
+    if i in numbers:
         choice = int(choice)
         if choice == number:
             print("WIN")
         else:
             print("LOST")
     #FIRST THIRD
-    elif choice == "firstthird"
+    elif choice == "firstthird":
         if number in firstThird:
             print("WIN")
         else:
             print("LOST")
     #SECOND THIRD
-    elif choice == "secondthird"
+    elif choice == "secondthird":
         if number in secondThird:
             print("WIN")
         else:
             print("LOST")
     #THIRD THIRD
-    elif choice == "thirdthird"
+    elif choice == "thirdthird":
         if number in thirdThird:
             print("WIN")
         else:
             print("LOST")
     #ODD
-    elif choice == "odd"
+    elif choice == "odd":
         if number in odd:
             print("WIN")
         else:
             print("LOST")
     #EVEN
-    elif choice == "even"
+    elif choice == "even":
         if number in even:
             print("WIN")
         else:
             print("LOST")
     #RED
-    elif choice == "red"
+    elif choice == "red":
         if number in red:
             print("WIN")
         else:
             print("LOST")
     #BLACK
-    elif choice == "black"
+    elif choice == "black":
         if number in black:
             print("WIN")
         else:
             print("LOST")
     #FIRST HALF
-    elif choice == "firsthalf"
+    elif choice == "firsthalf":
         if number in black:
             print("WIN")
         else:
             print("LOST")
     #SECOND HALF
-    elif choice == "secondhalf"
+    elif choice == "secondhalf":
         if number in black:
             print("WIN")
         else:
             print("LOST")
     #FIRST STOL
-    elif choice == "firsttol"
+    elif choice == "firsttol":
         if number in black:
             print("WIN")
         else:
             print("LOST")
     #SECOND STOL
-    elif choice == "secondtol"
+    elif choice == "secondtol":
         if number in black:
             print("WIN")
         else:
             print("LOST")
     #THIRD STOL
-    elif choice == "thirdtol"
+    elif choice == "thirdtol":
         if number in black:
             print("WIN")
         else:
