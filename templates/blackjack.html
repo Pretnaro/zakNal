@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>BLACKJACK</title>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<body>
+    BLACKJACK
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="output"></div>
+    <br>
+    <a href="/">INDEX</a>
+</body>
+<script>
+    function getIQ(){
+        // PREBEREMO VREDNOSTI HTML ELEMENTOV   
+        // TEXT INPUT "IME"
+        var ime = document.getElementById("met")
+        var output = document.getElementById("output")
+       // console.log(ime.value)
+    
+
+
+    
+        $.ajax({
+        url: "/blackjackGet",
+        
+    
+        success: function( result ) {
+            output.innerHTML = result
+    }
+        });
+
+    }
+</script>
+</html>
