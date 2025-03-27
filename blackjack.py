@@ -77,7 +77,7 @@ else:
         print(yourCards)
             
 #---------------------------------------------------        
-        #SPLIT GAME
+    #SPLIT GAME
     elif choice == "S":
         if playerCard1 == playerCard2:
             playerCard1 += random.randrange(1, 12)
@@ -128,6 +128,7 @@ else:
             newDealerCard = random.randrange(1, 12)
             print(f"Delare got: {newDealerCard}")
             dealerCards += newDealerCard
+            print(f"Dealers cards are {dealerCards}")
             if dealerCards > 21:
                 print("YOU WIN")
                 break
