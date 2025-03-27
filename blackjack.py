@@ -123,6 +123,7 @@ else:
     #RESULTS
     print(f"Dealers cards are {dealerCard1} and {dealerCard2}")
     dealerCards = dealerCard1+dealerCard2
+    print(f"Dealers cards are {dealerCards}")
     if choice == "H" or choice == "P" or choice == "D":
         while dealerCards < 16:
             newDealerCard = random.randrange(1, 12)
