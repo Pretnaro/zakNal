@@ -126,7 +126,7 @@ else:
     if choice == "H" or choice == "P" or choice == "D":
         while dealerCards < 16:
             newDealerCard = random.randrange(1, 12)
-            print(newDealerCard)
+            print(f"Delare got: {newDealerCard}")
             dealerCards += newDealerCard
             if dealerCards > 21:
                 print("YOU WIN")
