@@ -13,6 +13,7 @@ secondHald = ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", 
 firstTol = ["1", "4", "7", "10", "13", "16", "19", "22", "25", "28", "31", "34"]
 secondTol = ["2", "5", "8", "11", "14", "17", "20", "23", "26", "29", "32", "35"]
 thirdTol = ["3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36"]
+print("Your choices are: input number, type: firstthird, secondthird, thirdthird, odd, even, red, black, firsthalf, secondhalf, firsttol, secondtol or thirdtol")
 choice = str(input("Input choice you want to play with: "))
 #SPIN
 number = random.randrange(0,37)
