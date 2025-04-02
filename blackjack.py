@@ -1,4 +1,8 @@
 import random
+#BET INPUT
+#balance = 1000
+#bet = int(input("Input bet: "))
+
 
 #DELJENJE KART
 #DEALER
@@ -33,51 +37,70 @@ else:
     #S = SPLIT
     choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
 #--------------------------------------------------- 
+while True: 
     #HIT GAME
-    if choice == "H":
-        while True:
-            newCard = random.randrange(1, 12)
-            yourCards += newCard
-            print(f"Your new card was: {newCard}")
-            print(f"Your cards: {yourCards}")
-            if yourCards > 21:
-                print("BUST")
-                break
-            else:
-                pass
-            choice2 = str(input("S = Stop, H = Another: "))
-            if choice2  == "H":
-                newCard2 = random.randrange(1, 12)
-                yourCards += newCard2
-                print(f"Your new card was: {newCard2}")
-                print(f"Your cards: {yourCards}")
-            else:
-                break
-        #RETURN 
-        print(yourCards)    
-
-#---------------------------------------------------             
-    #DOUBE DOWN GAME
-    elif choice == "D":
+    if choice == "H" or choice == "h":
         newCard = random.randrange(1, 12)
         yourCards += newCard
         print(f"Your new card was: {newCard}")
         print(f"Your cards: {yourCards}")
         if yourCards > 21:
             print("BUST")
+            break
+        else:
+            pass
+        choice2 = str(input("S = Stop, H = Another: "))
+        if choice2  == "H" or choice2 == "h":
+            newCard2 = random.randrange(1, 12)
+            yourCards += newCard2
+            print(f"Your new card was: {newCard2}")
+            print(f"Your cards: {yourCards}")
+            if yourCards > 21:
+                print("BUST")
+                break
+            else:
+                pass
+            choice3 = str(input("S = Stop, H = Another: "))
+            if choice3  == "H" or choice3 == "h":
+                newCard2 = random.randrange(1, 12)
+                yourCards += newCard2
+                print(f"Your new card was: {newCard2}")
+                print(f"Your cards: {yourCards}")
+                if yourCards > 21:
+                    print("BUST")
+                    break
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
+            
+    #RETURN 
+        print(yourCards)    
 
+#---------------------------------------------------             
+    #DOUBE DOWN GAME
+    elif choice == "D" or choice == "d":
+        newCard = random.randrange(1, 12)
+        yourCards += newCard
+        print(f"Your new card was: {newCard}")
+        print(f"Your cards: {yourCards}")
+        if yourCards > 21:
+            print("BUST")
+            break
         else:
             pass
 
                 
 #---------------------------------------------------                
     #PASS GAME      
-    elif choice == "P":
+    elif choice == "P" or choice == "p":
         pass
             
 #---------------------------------------------------        
     #SPLIT GAME
-    elif choice == "S":
+    elif choice == "S" or choice == "s":
         if playerCard1 == playerCard2:
             playerCard1 += random.randrange(1, 12)
             playerCard2 += random.randrange(1, 12)
@@ -132,14 +155,17 @@ else:
             if dealerCards > 21:
                 print("YOU WIN")
                 break
-            elif dealerCards == yourCards:
-                print("DRAW")
             else:
                 pass
         if dealerCards > yourCards:
             print("You lost")
+            break
+        elif dealerCards == yourCards:
+            print("DRAW")
+            break
         else:
             print("You won")
+            break
     elif choice == "S":
         while dealerCards < 16:
             dealerCards += random.randrange(1, 12)
