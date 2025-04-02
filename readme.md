@@ -26,3 +26,8 @@ Seveda je neumno spravljati mlade v to, ampak če je zastonj in na lastno odgovn
 2 logina, en za brezplačno uporabo in en za pravo uporabo, z katero bi moral slikati osebno in prepričati me da je uporabnik starejši od 18 let.
 Takoj za tem se pojavi kazalo, ker so različne igre: BLACKJACK, HORSE RACES, SLOTS, roleta...
 Uporabljna tehnologija bosta: python in html z css, ampak najbrž še kaj druggega če bom hotel res dobrto narediti.
+# VIRI PRIHODKOV
+Brezplačno, ampak če želiš lahko igraš za pravi denar
+# STRATEGIJA PRIDOBIVANJA PRIHODKOV
+DELJENJE KARTIC IN SPODBUJANJE OTROK K GAMBALNJU
+
