@@ -1,7 +1,13 @@
 import random
 #BET INPUT
-#balance = 1000
-#bet = int(input("Input bet: "))
+balance = 1000
+print(f"Your balance is: {balance}")
+bet = int(input("Input bet: "))
+balance -= bet
+print(f"Your new balance is: {balance}")
+
+
+
 
 
 #DELJENJE KART
@@ -162,9 +168,11 @@ while True:
             break
         elif dealerCards == yourCards:
             print("DRAW")
+            balance += bet
             break
         else:
             print("You won")
+            balance += bet*2
             break
     elif choice == "S":
         while dealerCards < 16:
