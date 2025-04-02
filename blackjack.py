@@ -22,28 +22,34 @@ print(f"Dealer Card: {dealerCard1}")
 print(f"Player Card: {playerCard1}")
 print(f"Player Card: {playerCard2}")
 #PRVI IF
-if dealerCard1 == 11:
-    #MIGHT BLACKJACK
-    #INSURANCE
-    insurance = int(input("Dealer might have Blackjack, do you want to insure(Half or more tokens)"))
-    if insurance == 0 and dealerCard1 + dealerCard2 == 21:
-        print("BUST")
-    #NI BLACKJACK(2x)
-    else:
-        insurance += insurance
-        balance += insurance
-else:
-    yourCards = playerCard1+playerCard2
-    #RETURN
-    print(f"Vsota tvojih cart: {yourCards}")
-    #IZBIRA
-    #H = HIT
-    #D = DOUBLE DOWN
-    #P = PASS
-    #S = SPLIT
-    choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
-#--------------------------------------------------- 
 while True: 
+    if dealerCard1 == 11:
+        #MIGHT BLACKJACK
+        #INSURANCE
+        insurance = str(input("Dealer might have Blackjack, do you want to insure(Half or more tokens)"))
+        if insurance 
+        if insurance == 0 and dealerCard1 + dealerCard2 == 21:
+            print("BUST")
+        #NI BLACKJACK(2x)
+        else:
+            insurance += insurance
+            balance += insurance
+    else:
+        yourCards = playerCard1+playerCard2
+        #RETURN
+        print(f"Vsota tvojih cart: {yourCards}")
+        #IZBIRA
+        #H = HIT
+        #D = DOUBLE DOWN
+        #P = PASS
+        #S = SPLIT
+        if playerCard1 == playerCard2:
+            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
+        else: 
+            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS): "))
+
+#--------------------------------------------------- 
+
     #HIT GAME
     if choice == "H" or choice == "h":
         newCard = random.randrange(1, 12)
