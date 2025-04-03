@@ -11,6 +11,8 @@ messages = db.table('sporocila')
 User = Query()
 
 
+
+
 @app.route("/index")
 def index():
     return render_template("index.html")
