@@ -34,6 +34,11 @@ def login():
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
 
 
 @app.route("/")
