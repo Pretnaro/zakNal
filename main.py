@@ -4,11 +4,37 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
+app.secret_key = "UltraSigma"
 
 db = TinyDB('users.json')
 users = db.table('uporabniki')  
 messages = db.table('sporocila') 
 User = Query()
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    session['role'] = 'user'
+    if request.method == 'POST':
+        try:
+            username = request.form['username']
+            password = request.form['password']
+            user = users.get(User.username == username)          
+            if user:
+                if user['password'] == password:
+                    session['username'] = username
+                    return jsonify({'success': True})                 
+                else:
+                    return jsonify({'success': False, 'error': 'Napačno geslo'})
+            else:
+                users.insert({'username': username, 'password': password})
+                session['username'] = username
+                return jsonify({'success': True})
+        except Exception as e:
+            print(f"Napaka pri prijavi: {str(e)}")
+            return jsonify({'success': False, 'error': 'Prišlo je do napake'})
+    return render_template('login.html')
+
+
 
 @app.route("/")
 def index():

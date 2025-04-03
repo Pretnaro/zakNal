@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,19 +6,17 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>Dobrodošli v Preprostem Klepetu</h1>
-    
+    <h1>PRIJAVA</h1>
     <div id="error-message" style="color: red; display: none;"></div>
     
     <div id="login-container">
-        <h2>Prijava ali Registracija</h2>
         <p>Če račun ne obstaja, bo ustvarjen nov.</p>
         
         <div>
             <label for="username">Uporabniško ime:</label>
             <input type="text" id="username" required>
         </div>
-        
+
         <div>
             <label for="password">Geslo:</label>
             <input type="password" id="password" required>
@@ -27,7 +26,6 @@
             <button onclick="loginOrRegister()">Prijava / Registracija</button>
         </div>
     </div>
-    
     <script>
         function loginOrRegister() {
             const username = document.getElementById('username').value.trim();
@@ -66,14 +64,13 @@
             if (e.key === 'Enter') {
                 loginOrRegister();
             }
-        });
-        
+        });       
         document.getElementById('password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 loginOrRegister();
             }
         });
-        
+
     </script>
 </body>
 </html>
