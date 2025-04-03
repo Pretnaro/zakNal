@@ -7,9 +7,8 @@ balance -= bet
 print(f"Your new balance is: {balance}")
 
 
-
-
-
+#SEZNAM Z ŠTEVILKAMI 
+numbers = [str(i) for i in range(10001)]
 #DELJENJE KART
 #DEALER
 dealerCard1 = random.randrange(1, 12)
@@ -19,34 +18,45 @@ playerCard1 = random.randrange(1, 12)
 playerCard2 = random.randrange(1, 12)
 #RETURN
 print(f"Dealer Card: {dealerCard1}")
+print("---------------------------")
 print(f"Player Card: {playerCard1}")
 print(f"Player Card: {playerCard2}")
+print("---------------------------")
 #PRVI IF
 while True: 
+    if playerCard1 + playerCard2 == 21:
+        print("AVTOMATSKI BLACKJACK")
+        print("You win")
+        break
     if dealerCard1 == 11:
         #MIGHT BLACKJACK
         #INSURANCE
-        insurance = str(input("Dealer might have Blackjack, do you want to insure(Half or more tokens)"))
-        if insurance 
+        insurance = str(input("Dealer might have Blackjack, do you want to insure(Y/N): "))
+        if insurance == "Y":
+            vnosek = int(input("Input insurance: "))
+        elif insurance == "N":
+            pass
+        print(f"Second card was: {dealerCard2}")
         if insurance == 0 and dealerCard1 + dealerCard2 == 21:
             print("BUST")
+            break
         #NI BLACKJACK(2x)
         else:
-            insurance += insurance
-            balance += insurance
+            vnosek += vnosek
+            balance += vnosek
     else:
         yourCards = playerCard1+playerCard2
         #RETURN
         print(f"Vsota tvojih cart: {yourCards}")
-        #IZBIRA
-        #H = HIT
-        #D = DOUBLE DOWN
-        #P = PASS
-        #S = SPLIT
-        if playerCard1 == playerCard2:
-            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
-        else: 
-            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS): "))
+    #IZBIRA
+    #H = HIT
+    #D = DOUBLE DOWN
+    #P = PASS
+    #S = SPLIT
+    if playerCard1 == playerCard2:
+        choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
+    else: 
+        choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS): "))
 
 #--------------------------------------------------- 
 
@@ -194,3 +204,4 @@ while True:
                 print("ONE")
             elif dealerCards < playerCard2 and dealerCards < playerCard2:
                 print("NONE")
+print(f"Your new balance is: {balance}")
