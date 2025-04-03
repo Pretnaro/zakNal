@@ -51,21 +51,21 @@ def getBlackjack():
             print("You win")
             break
         #MIGHT BLACKJACK
-            if dealerCard1 == 11:
-                #INSURANCE
-                insurance = str(input("Dealer might have Blackjack, do you want to insure(Y/N): "))
-                if insurance == "Y":
-                    vnosek = int(input("Input insurance: "))
-                elif insurance == "N":
-                    pass
+        if dealerCard1 == 11:
+            #INSURANCE
+            insurance = str(input("Dealer might have Blackjack, do you want to insure(Y/N): "))
+            if insurance == "Y":
+                vnosek = int(input("Input insurance: "))
+            elif insurance == "N":
+                pass
             print(f"Second card was: {dealerCard2}")
             if insurance == 0 and dealerCard1 + dealerCard2 == 21:
                 print("BUST")
                 break
-        #NI BLACKJACK(2x)
-        else:
-            vnosek += vnosek
-            balance += vnosek
+            #NI BLACKJACK(2x)
+            else:
+                vnosek += vnosek
+                balance += vnosek
         else:
             yourCards = playerCard1+playerCard2
             #RETURN
@@ -379,7 +379,12 @@ def horseraces():
 #PODATKOVNI ROUTE ROLETA
 @app.route("/horceracesGet")
 def getHorseraces():
- 
+    horseNumber = int(input("Input horse number: "))
+    videoNumber = random.randrange(5)
+    if horseNumber == videoNumber:
+        print("YOU WIN")
+    else:
+        print("YOU LOST")
 
 app.run(debug = True)
 
