@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDEX</title>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
     <h1>INDEX</h1>
-        <a href="/blackjack"> - - BLACKJACK - - </a><br>
-        <a href="/roleta"> - - ROLETA - - </a><br>
-        <a href="/slots"> - - SLOTS - - </a><br>
-        <a href="/horseraces"> - - HORSE RACES - - </a><br>
+    <a href="/blackjack"> - - BLACKJACK - - </a><br>
+    <a href="/roleta"> - - ROLETA - - </a><br>
+    <a href="/slots"> - - SLOTS - - </a><br>
+    <a href="/horseraces"> - - HORSE RACES - - </a><br>
+    <b>{{ session.username }}</b>! <button onclick="logout()">Odjava</button></p>
 </body>
+
+<script>
+    function logout() {
+        window.location.href = '/logout';
+    }
+</script>
 </html>

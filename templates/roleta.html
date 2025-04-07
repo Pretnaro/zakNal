@@ -1,15 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROLETA</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <body>
-    
-    
-    <a href="/">INDEX</a>
-</body>
-<script>
 
-</script>
+    <h1>ROLETA</h1>
+
+    <label for="choice">Choose your bet:</label>
+    <select id="choice">
+        <option value="0">Number (0-36)</option>
+        <option value="firstthird">First Third (1-12)</option>
+        <option value="secondthird">Second Third (13-24)</option>
+        <option value="thirdthird">Third Third (25-36)</option>
+        <option value="odd">Odd Numbers</option>
+        <option value="even">Even Numbers</option>
+        <option value="red">Red Numbers</option>
+        <option value="black">Black Numbers</option>
+        <option value="firsthalf">First Half (1-18)</option>
+        <option value="secondhalf">Second Half (19-36)</option>
+        <option value="firsttol">First Column (1,4,7,...)</option>
+        <option value="secondtol">Second Column (2,5,8,...)</option>
+        <option value="thirdtol">Third Column (3,6,9,...)</option>
+    </select>
+
+    <button id="spinButton">Spin the Wheel</button>
+
+    <p id="userChoice"></p>
+    <p id="spunNumber"></p>
+    <p id="result"></p>
+
+
+    <a href="/">Go Back</a>
+
+    <script>
+        $(document).ready(function() {
+            $("#spinButton").click(function() {
+                var userChoice = $("#choice").val();
+
+                $.ajax({
+                    url: "/roletaGet",
+                    method: "GET",
+                    data: { choice: userChoice },
+                    success: function(response) {
+                        $("#userChoice").text("Your Choice: " + response.choice);
+                        $("#spunNumber").text("Spun Number: " + response.number);
+                        $("#result").text("Result: " + response.result);
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
 </html>

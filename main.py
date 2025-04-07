@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from tinydb import TinyDB, Query
 from datetime import datetime
 import os
+import random
 
 app = Flask(__name__)
 app.secret_key = "UltraSigma"
@@ -274,27 +275,42 @@ def getSlots():
     rnd2=random.randrange(1,10)
     rnd3=random.randrange(1,10)
     print(rnd1, rnd2, rnd3)
+    result = "POSKUSI PONOVNO"  # MESS
+    prize = 0  # PRIZE
+    #REZULTATI
     if rnd1 == rnd2 == rnd3 == 1:
-    
         print("YOU WON 1€")
-    if rnd1 == rnd2 == rnd3 == 2:
+        prize = 1
+    elif rnd1 == rnd2 == rnd3 == 2:
         print("YOU WON 20€")
-    if rnd1 == rnd2 == rnd3 == 3:
+        prize = 20
+    elif rnd1 == rnd2 == rnd3 == 3:
         print("YOU WON 30€")
-    if rnd1 == rnd2 == rnd3 == 4:
+        prize = 30
+    elif rnd1 == rnd2 == rnd3 == 4:
         print("YOU WON 40€")
-    if rnd1 == rnd2 == rnd3 == 5:
+        prize = 40
+    elif rnd1 == rnd2 == rnd3 == 5:
         print("YOU WON 500€")
-    if rnd1 == rnd2 == rnd3 == 6:
+        prize = 500
+    elif rnd1 == rnd2 == rnd3 == 6:
         print("YOU WON 60€")
-    if rnd1 == rnd2 == rnd3 == 7:
+        prize = 60
+    elif rnd1 == rnd2 == rnd3 == 7:
         print("YOU WON 1000€")
-    if rnd1 == rnd2 == rnd3 == 8:
+        prize = 1000
+    elif rnd1 == rnd2 == rnd3 == 8:
         print("YOU WON 80€")
-    if rnd1 == rnd2 == rnd3 == 9:
+        prize = 80
+    elif rnd1 == rnd2 == rnd3 == 9:
         print("YOU WON 90€")
+        prize = 90
     else:
         print("POSKUSI PONOVNO")
+        prize = 0
+
+    return jsonify(result=result, prize=prize, numbers=[rnd1, rnd2, rnd3])
+
 
 
 #ROLETA
@@ -320,91 +336,70 @@ def getRoleta():
     secondTol = ["2", "5", "8", "11", "14", "17", "20", "23", "26", "29", "32", "35"]
     thirdTol = ["3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36"]
     print("Your choices are: input number, type: firstthird, secondthird, thirdthird, odd, even, red, black, firsthalf, secondhalf, firsttol, secondtol or thirdtol")
-    choice = str(input("Input choice you want to play with: "))
+    choice = request.args.get('choice')
     #SPIN
     number = random.randrange(0,37)
     number = str(number)
     print(f"NUMBER IS {number}")
     #NUMBER
+    result = "LOST"
     if choice in numbers: 
         if choice == number:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #FIRST THIRD
     elif choice == "firstthird":
         if number in firstThird:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #SECOND THIRD
     elif choice == "secondthird":
         if number in secondThird:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #THIRD THIRD
     elif choice == "thirdthird":
         if number in thirdThird:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #ODD
     elif choice == "odd":
         if number in odd:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #EVEN
     elif choice == "even":
         if number in even:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #RED
     elif choice == "red":
         if number in red:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #BLACK
     elif choice == "black":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #FIRST HALF
     elif choice == "firsthalf":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #SECOND HALF
     elif choice == "secondhalf":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #FIRST STOL
     elif choice == "firsttol":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #SECOND STOL
     elif choice == "secondtol":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
+            result  = "WIN"
     #THIRD STOL
     elif choice == "thirdtol":
         if number in black:
-            print("WIN")
-        else:
-            print("LOST")
-    else:
-        print("THIS IS NOT AN OPTION")
+            result  = "WIN"
+
+    return jsonify({
+        "result": result,
+        "number": number,
+        "choice": choice
+    })
 
 #HORSE RACES
 @app.route("/horseraces")
