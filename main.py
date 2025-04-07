@@ -8,8 +8,13 @@ app.secret_key = "UltraSigma"
 
 db = TinyDB('users.json')
 users = db.table('uporabniki')  
-messages = db.table('sporocila') 
 User = Query()
+
+@app.route('/')
+def index():
+    if 'username' in session:
+        return render_template('kazalo.html')
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,9 +46,9 @@ def logout():
 
 
 
-@app.route("/")
-def index():
-    return render_template("index.html")
+@app.route("/kazalo")
+def kazalo():
+    return render_template("kazalo.html")
 
 #BLACKJACK
 @app.route("/blackjack")
@@ -401,13 +406,13 @@ def getRoleta():
     else:
         print("THIS IS NOT AN OPTION")
 
-#ROLETA
+#HORSE RACES
 @app.route("/horseraces")
 def horseraces():
     return render_template("horseraces.html")
 
 
-#PODATKOVNI ROUTE ROLETA
+#PODATKOVNI ROUTE HORSE RACES
 @app.route("/horceracesGet")
 def getHorseraces():
     horseNumber = int(input("Input horse number: "))
