@@ -274,7 +274,6 @@ def getSlots():
     rnd1=random.randrange(1,10)
     rnd2=random.randrange(1,10)
     rnd3=random.randrange(1,10)
-    print(rnd1, rnd2, rnd3)
     result = "POSKUSI PONOVNO"  # MESS
     prize = 0  # PRIZE
     #REZULTATI
@@ -309,7 +308,19 @@ def getSlots():
         print("POSKUSI PONOVNO")
         prize = 0
 
-    return jsonify(result=result, prize=prize, numbers=[rnd1, rnd2, rnd3])
+    img_map = {
+    1: "/static/images/slots/apple.jpg",
+    2: "/static/images/slots/banana.jpg",
+    3: "/static/images/slots/bell.jpg",
+    4: "/static/images/slots/cherries.jpg",
+    5: "/static/images/slots/coins.jpg",
+    6: "/static/images/slots/grape.jpg",
+    7: "/static/images/slots/sedmica.jpg",
+    8: "/static/images/slots/rubby.jpg",
+    9: "/static/images/slots/strawberry.jpg",
+    }
+
+    return jsonify(result=result, prize=prize, numbers=[img_map[rnd1], img_map[rnd2], img_map[rnd3]])
 
 
 
