@@ -1,8 +1,8 @@
 import random
-card1 = random.randint(1, 14)
-card2 = random.randint(1, 14)
-card3 = random.randint(1, 14)
-card4 = random.randint(1, 14)
+card1 = random.randint(1, 15)
+card2 = random.randint(1, 15)
+card3 = random.randint(1, 15)
+card4 = random.randint(1, 15)
 
 
 while True:
