@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPPERLOWER</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+
+    <h1>UPPERLOWER</h1>
+    <button id="higher">HIGHER</button>
+    <button id="lower">LOWER</button>
+
+    <p id="result"></p>
+    <p id="prize"></p>
+    
+
+    <a href="/">INDEX</a>
+
+    <script>
+        $(document).ready(function() {
+            $("#spinButton").click(function() {
+                $.ajax({
+                    url: "/upperlowerGet",
+                    method: "GET",
+                    success: function(response) {
+                        // Display result, prize, and the random numbers
+                        $("#numbers").text("Numbers: " + response.numbers.join(" "));
+                        $("#result").text(response.result);
+                        $("#prize").text("Prize: " + response.prize + "€");
+                        
+
+                        $("#img1").attr("src", response.numbers[0]);
+                        $("#img2").attr("src", response.numbers[1]);
+                        $("#img3").attr("src", response.numbers[2]);
+                        
+                    },
+                    error: function(error) {
+                        console.error("Error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
