@@ -5,43 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UPPERLOWER</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        button {
+            margin: 5px;
+        }
+        .card-img {
+            height: 150px;
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
 
     <h1>UPPERLOWER</h1>
+    <div id="cardDisplay"></div>
     <button id="higher">HIGHER</button>
     <button id="lower">LOWER</button>
+    <button id="restart" style="display:none;">RESTART</button>
 
     <p id="result"></p>
     <p id="prize"></p>
     
-
     <a href="/">INDEX</a>
 
     <script>
-        $(document).ready(function() {
-            $("#spinButton").click(function() {
-                $.ajax({
-                    url: "/upperlowerGet",
-                    method: "GET",
-                    success: function(response) {
-                        // Display result, prize, and the random numbers
-                        $("#numbers").text("Numbers: " + response.numbers.join(" "));
-                        $("#result").text(response.result);
-                        $("#prize").text("Prize: " + response.prize + "€");
-                        
+        const cardNames = [
+            "ace", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine", "ten",
+            "jack", "queen", "king"
+        ];
 
-                        $("#img1").attr("src", response.numbers[0]);
-                        $("#img2").attr("src", response.numbers[1]);
-                        $("#img3").attr("src", response.numbers[2]);
-                        
-                    },
-                    error: function(error) {
-                        console.error("Error:", error);
-                    }
-                });
-            });
-        });
+        let cards = [];
+        let currentIndex = 0;
+        let gameOver = false;
+
+        function generateCards() {
+            return [
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1
+            ];
+        }
+
     </script>
 
 </body>
