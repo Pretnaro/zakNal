@@ -96,6 +96,23 @@
                 gameOver = true;
                 return;
             }
+            if ((guess === 'U' && next > current) || (guess === 'L' && next < current)) {
+                currentIndex++;
+                if (currentIndex === 3) {
+                    endGame("WIN");
+                    gameOver = true;
+                }
+            } else {
+                endGame("BUST");
+                gameOver = true;
+            }
+        }
+
+        $('#higher').click(() => handleGuess('U'));
+        $('#lower').click(() => handleGuess('L'));
+        $('#restart').click(() => startGame());
+
+        startGame();
 
 
     </script>
