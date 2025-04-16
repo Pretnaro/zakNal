@@ -47,6 +47,31 @@
                 Math.floor(Math.random() * 13) + 1
             ];
         }
+    
+    
+        function getCardImagePath(value) {
+            return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
+        }
+
+        function showCard(value) {
+            const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
+            $('#cardDisplay').append(img);
+        }
+
+        function startGame() {
+            cards = generateCards();
+            currentIndex = 0;
+            gameOver = false;
+
+            $('#cardDisplay').html('');
+            $('#result').text('');
+            $('#prize').text('');
+            $('#higher, #lower').prop('disabled', false);
+            $('#restart').hide();
+
+            showCard(cards[0]);
+        }
+
 
     </script>
 
