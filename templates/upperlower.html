@@ -72,6 +72,31 @@
             showCard(cards[0]);
         }
 
+        function endGame(message) {
+            $('#result').text(message);
+            $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
+            $('#higher, #lower').prop('disabled', true);
+            $('#restart').show();
+
+            for (let i = currentIndex + 1; i < cards.length; i++) {
+                showCard(cards[i]);
+            }
+        }
+
+        function handleGuess(guess) {
+            if (gameOver) return;
+
+            let current = cards[currentIndex];
+            let next = cards[currentIndex + 1];
+
+            showCard(next);
+
+            if (next === current) {
+                endGame("Same cards! Game over.");
+                gameOver = true;
+                return;
+            }
+
 
     </script>
 
