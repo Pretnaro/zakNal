@@ -40,6 +40,30 @@ def login():
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
     return render_template('login.html')
 
+@app.route('/reallogin', methods=['GET', 'POST'])
+def reallogin():
+    session['role'] = 'user'
+    if request.method == 'POST':
+        try:
+            username = request.form['username']
+            password = request.form['password']
+            image = request.form['image']
+            user = users.get(User.username == username)          
+            if user:
+                if user['password'] == password:
+                    session['username'] = username
+                    return jsonify({'success': True})                 
+                else:
+                    return jsonify({'success': False, 'error': 'Napačno geslo'})
+            else:
+                users.insert({'username': username, 'password': password})
+                session['username'] = username
+                return jsonify({'success': True})
+        except Exception as e:
+            print(f"Napaka pri prijavi: {str(e)}")
+            return jsonify({'success': False, 'error': 'Prišlo je do napake'})
+    return render_template('reallogin.html')
+
 @app.route('/logout')
 def logout():
     session.pop('username', None)
