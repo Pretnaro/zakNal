@@ -28,13 +28,13 @@ def login():
             if user:
                 if user['password'] == password:
                     session['username'] = username
-                    return jsonify({'success': True})                 
+                    return jsonify({'success': True, 'redirect': url_for('kazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
                 users.insert({'username': username, 'password': password})
                 session['username'] = username
-                return jsonify({'success': True})
+                return jsonify({'success': True, 'redirect': url_for('kazalo')})
         except Exception as e:
             print(f"Napaka pri prijavi: {str(e)}")
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
@@ -52,13 +52,13 @@ def reallogin():
             if user:
                 if user['password'] == password:
                     session['username'] = username
-                    return jsonify({'success': True})                 
+                    return jsonify({'success': True, 'redirect': url_for('realkazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
                 users.insert({'username': username, 'password': password})
                 session['username'] = username
-                return jsonify({'success': True})
+                return jsonify({'success': True, 'redirect': url_for('realkazalo')})
         except Exception as e:
             print(f"Napaka pri prijavi: {str(e)}")
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
@@ -69,11 +69,14 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
-
 @app.route("/kazalo")
 def kazalo():
     return render_template("kazalo.html")
 
+@app.route("/realkazalo")
+def realkazalo():
+    return render_template("realkazalo.html")
+    
 #BLACKJACK
 @app.route("/blackjack")
 def blackjack():
