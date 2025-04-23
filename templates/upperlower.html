@@ -1,221 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPPERLOWER</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #0a192f;
-            color: #e6f1ff;
-            text-align: center;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        h1 {
-            color: #64ffda;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-        }
-        
-        #cardDisplay {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card-img {
-            width: 150px;
-            height: 210px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-            border: 2px solid #172a45;
-        }
-        
-        .card-img:hover {
-            transform: translateY(-10px);
-            border-color: #64ffda;
-        }
-        
-        button {
-            background-color: #3a75c4;
-            color: #ffffff;
-            border: none;
-            padding: 12px 24px;
-            margin: 0 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        button:hover {
-            background-color: #5a8fd6;
-            transform: scale(1.05);
-        }
-        
-        button:disabled {
-            background-color: #274472;
-            cursor: not-allowed;
-            transform: none;
-            opacity: 0.7;
-        }
-        
-        #restart {
-            background-color: #2d6cdf;
-        }
-        
-        #restart:hover {
-            background-color: #4b83e8;
-        }
-        
-        #result {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        
-        #prize {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #8892b0;
-        }
-        
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #64ffda;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-        
-        a:hover {
-            color: #a8ffe0;
-            text-decoration: underline;
-        }
-
-        /* Game result styles */
-        #result:contains("WIN") {
-            color: #64ffda;
-            text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
-            animation: pulse 1.5s infinite;
-        }
-        
-        #result:contains("BUST") {
-            color: #ff6b6b;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsive design */
-        @media (max-width: 600px) {
-            .card-img {
-                width: 100px;
-                height: 140px;
-            }
-            
-            button {
-                padding: 10px 20px;
-                font-size: 1rem;
-                margin-bottom: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <h1>UPPERLOWER</h1>
-    <div id="cardDisplay"></div>
-    <button id="higher">HIGHER</button>
-    <button id="lower">LOWER</button>
-    <button id="restart" style="display:none;">RESTART</button>
-    <p id="result"></p>
-    <p id="prize"></p>
-    <a href="/">INDEX</a>
-    <script>
-        const cardNames = [
-            "ace", "two", "three", "four", "five",
-            "six", "seven", "eight", "nine", "ten",
-            "jack", "queen", "king"
-        ];
-        let cards = [];
-        let currentIndex = 0;
-        let gameOver = false;
-        function generateCards() {
-            return [
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1
-            ];
-        }
-        function getCardImagePath(value) {
-            return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
-        }
-        function showCard(value) {
-            const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
-            $('#cardDisplay').append(img);
-        }
-        function startGame() {
-            cards = generateCards();
-            currentIndex = 0;
-            gameOver = false;
-            $('#cardDisplay').html('');
-            $('#result').text('');
-            $('#prize').text('');
-            $('#higher, #lower').prop('disabled', false);
-            $('#restart').hide();
-            showCard(cards[0]);
-        }
-        function endGame(message) {
-            $('#result').text(message);
-            $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
-            $('#higher, #lower').prop('disabled', true);
-            $('#restart').show();
-
-            for (let i = currentIndex + 1; i < cards.length; i++) {
-                showCard(cards[i]);
-            }
-        }
-        function handleGuess(guess) {
-            if (gameOver) return;
-            let current = cards[currentIndex];
-            let next = cards[currentIndex + 1];
-            showCard(next);
-            if (next === current) {
-                endGame("Same cards! Game over.");
-                gameOver = true;
-                return;
-            }
-            if ((guess === 'U' && next > current) || (guess === 'L' && next < current)) {
-                currentIndex++;
-                if (currentIndex === 3) {
-                    endGame("WIN");
-                    gameOver = true;
-                }
-            } else {
-                endGame("BUST");
-                gameOver = true;
-            }
-        }
-        $('#higher').click(() => handleGuess('U'));
-        $('#lower').click(() => handleGuess('L'));
-        $('#restart').click(() => startGame());
-        startGame();
-    </script>
-</body>
-</html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>UPPERLOWER</title>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+     <style>
+         button {
+             margin: 5px;
+         }
+         .card-img {
+             height: 150px;
+             margin: 5px;
+         }
+     </style>
+ </head>
+ <body>
+ 
+     <h1>UPPERLOWER</h1>
+     <div id="cardDisplay"></div>
+     <button id="higher">HIGHER</button>
+     <button id="lower">LOWER</button>
+     <button id="restart" style="display:none;">RESTART</button>
+ 
+     <p id="result"></p>
+     <p id="prize"></p>
+ 
+     <a href="/">INDEX</a>
+ 
+     <script>
+         const cardNames = [
+             "ace", "two", "three", "four", "five",
+             "six", "seven", "eight", "nine", "ten",
+             "jack", "queen", "king"
+         ];
+ 
+         let cards = [];
+         let currentIndex = 0;
+         let gameOver = false;
+ 
+         function generateCards() {
+             return [
+                 Math.floor(Math.random() * 13) + 1,
+                 Math.floor(Math.random() * 13) + 1,
+                 Math.floor(Math.random() * 13) + 1,
+                 Math.floor(Math.random() * 13) + 1
+             ];
+         }
+ 
+ 
+         function getCardImagePath(value) {
+             return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
+         }
+ 
+         function showCard(value) {
+             const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
+             $('#cardDisplay').append(img);
+         }
+ 
+         function startGame() {
+             cards = generateCards();
+             currentIndex = 0;
+             gameOver = false;
+ 
+             $('#cardDisplay').html('');
+             $('#result').text('');
+             $('#prize').text('');
+             $('#higher, #lower').prop('disabled', false);
+             $('#restart').hide();
+ 
+             showCard(cards[0]);
+         }
+ 
+         function endGame(message) {
+             $('#result').text(message);
+             $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
+             $('#higher, #lower').prop('disabled', true);
+             $('#restart').show();
+ 
+             for (let i = currentIndex + 1; i < cards.length; i++) {
+                 showCard(cards[i]);
+             }
+         }
+ 
+         function handleGuess(guess) {
+             if (gameOver) return;
+ 
+             let current = cards[currentIndex];
+             let next = cards[currentIndex + 1];
+ 
+             showCard(next);
+ 
+             if (next === current) {
+                 endGame("Same cards! Game over.");
+                 gameOver = true;
+                 return;
+             }
+             if ((guess === 'U' && next > current) || (guess === 'L' && next < current)) {
+                 currentIndex++;
+                 if (currentIndex === 3) {
+                     endGame("WIN");
+                     gameOver = true;
+                 }
+             } else {
+                 endGame("BUST");
+                 gameOver = true;
+             }
+         }
+ 
+         $('#higher').click(() => handleGuess('U'));
+         $('#lower').click(() => handleGuess('L'));
+         $('#restart').click(() => startGame());
+ 
+         startGame();
+ 
+ 
+     </script>
+ 
+ </body>
+ </html>
