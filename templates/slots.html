@@ -10,13 +10,14 @@
 
     <h1>SLOTS</h1>
     <button id="spinButton">Spin</button>
-    <p id="numbers"></p>
+    <p id="numbers">
+        <img id="img1" src="" width="100">
+        <img id="img2" src="" width="100">
+        <img id="img3" src="" width="100">
+    </p>
     <p id="result"></p>
     <p id="prize"></p>
-    
-
     <a href="/">INDEX</a>
-
     <script>
         $(document).ready(function() {
             $("#spinButton").click(function() {
@@ -24,11 +25,11 @@
                     url: "/slotsGet",
                     method: "GET",
                     success: function(response) {
-                        // Display result, prize, and the random numbers
-                        $("#numbers").text("Numbers: " + response.numbers.join(" "));
+                        $("#img1").attr("src", response.numbers[0]);
+                        $("#img2").attr("src", response.numbers[1]);
+                        $("#img3").attr("src", response.numbers[2]);
                         $("#result").text(response.result);
                         $("#prize").text("Prize: " + response.prize + "€");
-                        
                     },
                     error: function(error) {
                         console.error("Error:", error);
@@ -37,6 +38,5 @@
             });
         });
     </script>
-
 </body>
 </html>
