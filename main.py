@@ -70,7 +70,6 @@ def logout():
     return redirect(url_for('login'))
 
 
-
 @app.route("/kazalo")
 def kazalo():
     return render_template("kazalo.html")
