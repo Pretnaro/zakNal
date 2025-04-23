@@ -1,61 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROLETA</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ROLETA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <style>
+    #roulette-container {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      margin-bottom: 10px;
+    }
+
+    #img1 {
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      transition: transform 3s ease-out;
+    }
+
+    #ball {
+      position: absolute;
+      top: 240px;
+      left: 240px;
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .highlight {
+      outline: 3px solid yellow;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>ROLETA</h1>
-    <img id="img1" src="/static/images/roleta/roleta.jpg" alt="Slot 1" width="500" height="500"><br>
-    <label for="choice">Choose your bet:</label>
-    <select id="choice">
-        <option value="0">Number (0-36)</option>
-        <option value="firstthird">First Third (1-12)</option>
-        <option value="secondthird">Second Third (13-24)</option>
-        <option value="thirdthird">Third Third (25-36)</option>
-        <option value="odd">Odd Numbers</option>
-        <option value="even">Even Numbers</option>
-        <option value="red">Red Numbers</option>
-        <option value="black">Black Numbers</option>
-        <option value="firsthalf">First Half (1-18)</option>
-        <option value="secondhalf">Second Half (19-36)</option>
-        <option value="firsttol">First Column (1,4,7,...)</option>
-        <option value="secondtol">Second Column (2,5,8,...)</option>
-        <option value="thirdtol">Third Column (3,6,9,...)</option>
-    </select>
-    <button id="spinButton">Spin the Wheel</button>
+  <h1>ROLETA</h1>
 
-    <p id="userChoice"></p>
-    <p id="spunNumber"></p>
-    <p id="result"></p>
+  <div id="roulette-container">
+    <div id="ball"></div>
+    <img id="img1" src="/static/images/roleta/roleta.jpg" alt="Slot 1">
+  </div>
 
+  <label for="choice">Choose your bet:</label>
+  <select id="choice">
+    <option value="0">Number (0-36)</option>
+    <option value="firstthird">First Third (1-12)</option>
+    <option value="secondthird">Second Third (13-24)</option>
+    <option value="thirdthird">Third Third (25-36)</option>
+    <option value="odd">Odd</option>
+    <option value="even">Even</option>
+    <option value="red">Red</option>
+    <option value="black">Black</option>
+    <option value="firsthalf">First Half (1-18)</option>
+    <option value="secondhalf">Second Half (19-36)</option>
+    <option value="firsttol">First Column (1,4,7,...)</option>
+    <option value="secondtol">Second Column (2,5,8,...)</option>
+    <option value="thirdtol">Third Column (3,6,9,...)</option>
+  </select>
 
-    <a href="/">Go Back</a>
+  <button id="spinButton">Spin the Wheel</button>
 
-    <script>
-        $(document).ready(function() {
-            $("#spinButton").click(function() {
-                var userChoice = $("#choice").val();
+  <p id="userChoice"></p>
+  <p id="spunNumber"></p>
+  <p id="result"></p>
 
-                $.ajax({
-                    url: "/roletaGet",
-                    method: "GET",
-                    data: { choice: userChoice },
-                    success: function(response) {
-                        $("#userChoice").text("Your Choice: " + response.choice);
-                        $("#spunNumber").text("Spun Number: " + response.number);
-                        $("#result").text("Result: " + response.result);
-                    },
-                    error: function(error) {
-                        console.error("Error:", error);
-                    }
-                });
-            });
+  <a href="/">INDEX</a>
+
+  <script>
+    let isSpinning = false;
+
+    $(document).ready(function () {
+      // Clickable area placeholder: You could map coordinates to bet values here
+      $("#img1").click(function (e) {
+        alert("In a full version, you would select a number by clicking specific parts of the wheel.");
+        // You can use e.offsetX and e.offsetY to map to areas if using an image map or canvas
+      });
+
+      $("#spinButton").click(function () {
+        if (isSpinning) return;
+        isSpinning = true;
+
+        var userChoice = $("#choice").val();
+        let spinAngle = 1440 + Math.floor(Math.random() * 360); // 4 full spins + random
+
+        $("#img1").css("transform", `rotate(${spinAngle}deg)`);
+
+        $.ajax({
+          url: "/roletaGet",
+          method: "GET",
+          data: { choice: userChoice },
+          success: function (response) {
+            setTimeout(() => {
+              $("#userChoice").text("Your Choice: " + response.choice);
+              $("#spunNumber").text("Spun Number: " + response.number);
+              $("#result").text("Result: " + response.result);
+              isSpinning = false;
+            }, 3000);
+          },
+          error: function (error) {
+            console.error("Error:", error);
+            isSpinning = false;
+          }
         });
-    </script>
-
+      });
+    });
+  </script>
 </body>
 </html>
