@@ -106,6 +106,19 @@
             background-color: var(--primary-dark);
         }
 
+        .add-money-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-money-btn:hover {
+            background-color: #16a085;
+        }
+
         @media (max-width: 500px) {
             h1 {
                 font-size: 32px;
@@ -141,34 +154,44 @@
         <b>{{ session.username }}</b>
         <b>Balance: <span id="balance">1000</span> €</b>
         <button onclick="logout()">Odjava</button>
+        <button class="add-money-btn" onclick="addMoneyPrompt()">Dodaj denar</button>
     </div>
-</body>
 
-<script>
-    function logout() {
-        window.location.href = '/logout';
-    }
-
-    let balance = 1000;
-
-    function updateBalanceDisplay() {
-        document.getElementById("balance").innerText = balance.toFixed(2);
-    }
-
-    function addMoney(amount) {
-        balance += amount;
-        updateBalanceDisplay();
-    }
-
-    function subtractMoney(amount) {
-        if (balance >= amount) {
-            balance -= amount;
-            updateBalanceDisplay();
-        } else {
-            alert("Nimaš dovolj denarja!");
+    <script>
+        function logout() {
+            window.location.href = '/logout';
         }
-    }
 
-    updateBalanceDisplay();
-</script>
+        let balance = 1000;
+
+        function updateBalanceDisplay() {
+            document.getElementById("balance").innerText = balance.toFixed(2);
+        }
+
+        function addMoney(amount) {
+            balance += amount;
+            updateBalanceDisplay();
+        }
+
+        function subtractMoney(amount) {
+            if (balance >= amount) {
+                balance -= amount;
+                updateBalanceDisplay();
+            } else {
+                alert("Nimaš dovolj denarja!");
+            }
+        }
+
+        function addMoneyPrompt() {
+            const amount = prompt("Koliko denarja želite dodati?", "0");
+            if (amount && !isNaN(amount) && parseFloat(amount) > 0) {
+                addMoney(parseFloat(amount));
+            } else {
+                alert("Prosim, vnesite veljaven znesek.");
+            }
+        }
+
+        updateBalanceDisplay();
+    </script>
+</body>
 </html>
