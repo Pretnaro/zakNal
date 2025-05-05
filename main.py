@@ -28,12 +28,14 @@ def login():
             if user:
                 if user['password'] == password:
                     session['username'] = username
+                    session.pop('reallogin', None)  # odstranimo morebitni prejšnji real login
                     return jsonify({'success': True, 'redirect': url_for('kazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
                 users.insert({'username': username, 'password': password})
                 session['username'] = username
+                session.pop('reallogin', None)
                 return jsonify({'success': True, 'redirect': url_for('kazalo')})
         except Exception as e:
             print(f"Napaka pri prijavi: {str(e)}")
@@ -47,17 +49,19 @@ def reallogin():
         try:
             username = request.form['username']
             password = request.form['password']
-            image = request.form['image']
+            image = request.form.get('image')  # opcijsko, če se uporablja
             user = users.get(User.username == username)          
             if user:
                 if user['password'] == password:
                     session['username'] = username
+                    session['reallogin'] = True  # označimo, da gre za real login
                     return jsonify({'success': True, 'redirect': url_for('realkazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
-                users.insert({'username': username, 'password': password})
+                users.insert({'username': username, 'password': password, 'balance': 1000})
                 session['username'] = username
+                session['reallogin'] = True
                 return jsonify({'success': True, 'redirect': url_for('realkazalo')})
         except Exception as e:
             print(f"Napaka pri prijavi: {str(e)}")
@@ -67,15 +71,20 @@ def reallogin():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('reallogin', None)
     return redirect(url_for('login'))
 
 @app.route("/kazalo")
 def kazalo():
-    return render_template("kazalo.html")
+    if 'username' in session:
+        return render_template("kazalo.html")
+    return redirect(url_for('login'))
 
 @app.route("/realkazalo")
 def realkazalo():
-    return render_template("realkazalo.html")
+    if 'username' in session and session.get('reallogin'):
+        return render_template("realkazalo.html")
+    return redirect(url_for('login'))
     
 #BLACKJACK
 @app.route("/blackjack")
@@ -519,6 +528,67 @@ def getUpperlower():
             result = "BUST"
             break
     return jsonify(result=result, numbers=[img_map[card1], img_map[card2], img_map[card3], img_map[card4] ])
+
+
+#SLOTS
+@app.route("/realslots")
+def realslots():
+    return render_template("realslots.html")
+
+
+#PODATKOVNI ROUTE SLOTS
+@app.route("/slotsGet")
+def getrealSlots():
+    rnd1=random.randrange(1,10)
+    rnd2=random.randrange(1,10)
+    rnd3=random.randrange(1,10)
+    result = "POSKUSI PONOVNO"  # MESS
+    prize = 0  # PRIZE
+    #REZULTATI
+    if rnd1 == rnd2 == rnd3 == 1:
+        print("YOU WON 1€")
+        prize = 1
+    elif rnd1 == rnd2 == rnd3 == 2:
+        print("YOU WON 20€")
+        prize = 20
+    elif rnd1 == rnd2 == rnd3 == 3:
+        print("YOU WON 30€")
+        prize = 30
+    elif rnd1 == rnd2 == rnd3 == 4:
+        print("YOU WON 40€")
+        prize = 40
+    elif rnd1 == rnd2 == rnd3 == 5:
+        print("YOU WON 500€")
+        prize = 500
+    elif rnd1 == rnd2 == rnd3 == 6:
+        print("YOU WON 60€")
+        prize = 60
+    elif rnd1 == rnd2 == rnd3 == 7:
+        print("YOU WON 1000€")
+        prize = 1000
+    elif rnd1 == rnd2 == rnd3 == 8:
+        print("YOU WON 80€")
+        prize = 80
+    elif rnd1 == rnd2 == rnd3 == 9:
+        print("YOU WON 90€")
+        prize = 90
+    else:
+        print("POSKUSI PONOVNO")
+        prize = 0
+
+    img_map = {
+    1: "/static/images/slots/apple.jpg",
+    2: "/static/images/slots/banana.jpg",
+    3: "/static/images/slots/bell.jpg",
+    4: "/static/images/slots/cherries.jpg",
+    5: "/static/images/slots/coins.jpg",
+    6: "/static/images/slots/grape.jpg",
+    7: "/static/images/slots/sedmica.jpg",
+    8: "/static/images/slots/rubby.jpg",
+    9: "/static/images/slots/strawberry.jpg",
+    }
+
+    return jsonify(result=result, prize=prize, numbers=[img_map[rnd1], img_map[rnd2], img_map[rnd3]])
 
 app.run(debug = True)
 

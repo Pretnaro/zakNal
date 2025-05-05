@@ -129,7 +129,6 @@
 </head>
 <body>
     <h1>INDEX</h1>
-    
     <div class="games-container">
         <a href="/blackjack"> - - BLACKJACK - - </a>
         <a href="/roleta"> - - ROLETA - - </a>
@@ -140,6 +139,7 @@
     
     <div class="user-section">
         <b>{{ session.username }}</b>
+        <b>Balance: <span id="balance">1000</span> €</b>
         <button onclick="logout()">Odjava</button>
     </div>
 </body>
@@ -148,5 +148,27 @@
     function logout() {
         window.location.href = '/logout';
     }
+
+    let balance = 1000;
+
+    function updateBalanceDisplay() {
+        document.getElementById("balance").innerText = balance.toFixed(2);
+    }
+
+    function addMoney(amount) {
+        balance += amount;
+        updateBalanceDisplay();
+    }
+
+    function subtractMoney(amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            updateBalanceDisplay();
+        } else {
+            alert("Nimaš dovolj denarja!");
+        }
+    }
+
+    updateBalanceDisplay();
 </script>
 </html>

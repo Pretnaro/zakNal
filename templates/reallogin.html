@@ -185,16 +185,16 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
             const errorMessage = document.getElementById('error-message');
-            
+    
             if (username === '' || password === '') {
                 errorMessage.textContent = 'Uporabniško ime in geslo sta obvezna!';
                 errorMessage.style.display = 'block';
                 return;
             }
-            
+    
             errorMessage.style.display = 'none';
             $.ajax({
-                url: '/login',
+                url: '/reallogin',  // <- POPRAVLJENO
                 type: 'POST',
                 data: {
                     username: username,
@@ -203,7 +203,7 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        window.location.href = '/';
+                        window.location.href = response.redirect;  // <- dinamično preusmeri
                     } else {
                         errorMessage.textContent = response.error;
                         errorMessage.style.display = 'block';
@@ -216,18 +216,15 @@
                 }
             });
         }
-        
+    
         document.getElementById('username').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loginOrRegister();
-            }
-        });       
-        
+            if (e.key === 'Enter') loginOrRegister();
+        });
+    
         document.getElementById('password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                loginOrRegister();
-            }
+            if (e.key === 'Enter') loginOrRegister();
         });
     </script>
+    
 </body>
 </html>
