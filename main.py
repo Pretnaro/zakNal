@@ -28,7 +28,7 @@ def login():
             if user:
                 if user['password'] == password:
                     session['username'] = username
-                    session.pop('reallogin', None)  # odstranimo morebitni prejšnji real login
+                    session.pop('reallogin', None)  
                     return jsonify({'success': True, 'redirect': url_for('kazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
@@ -49,12 +49,12 @@ def reallogin():
         try:
             username = request.form['username']
             password = request.form['password']
-            image = request.form.get('image')  # opcijsko, če se uporablja
+            image = request.form.get('image')  
             user = users.get(User.username == username)          
             if user:
                 if user['password'] == password:
                     session['username'] = username
-                    session['reallogin'] = True  # označimo, da gre za real login
+                    session['reallogin'] = True  
                     return jsonify({'success': True, 'redirect': url_for('realkazalo')})                 
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
