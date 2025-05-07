@@ -68,46 +68,8 @@
   <p id="spunNumber"></p>
   <p id="result"></p>
 
-  <a href="/">INDEX</a>
+  <a href="/kazalo">INDEX</a>
 
-  <script>
-    let isSpinning = false;
 
-    $(document).ready(function () {
-      // Clickable area placeholder: You could map coordinates to bet values here
-      $("#img1").click(function (e) {
-        alert("In a full version, you would select a number by clicking specific parts of the wheel.");
-        // You can use e.offsetX and e.offsetY to map to areas if using an image map or canvas
-      });
-
-      $("#spinButton").click(function () {
-        if (isSpinning) return;
-        isSpinning = true;
-
-        var userChoice = $("#choice").val();
-        let spinAngle = 1440 + Math.floor(Math.random() * 360); // 4 full spins + random
-
-        $("#img1").css("transform", `rotate(${spinAngle}deg)`);
-
-        $.ajax({
-          url: "/roletaGet",
-          method: "GET",
-          data: { choice: userChoice },
-          success: function (response) {
-            setTimeout(() => {
-              $("#userChoice").text("Your Choice: " + response.choice);
-              $("#spunNumber").text("Spun Number: " + response.number);
-              $("#result").text("Result: " + response.result);
-              isSpinning = false;
-            }, 3000);
-          },
-          error: function (error) {
-            console.error("Error:", error);
-            isSpinning = false;
-          }
-        });
-      });
-    });
-  </script>
 </body>
 </html>
