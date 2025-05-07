@@ -1,91 +1,102 @@
 <!DOCTYPE html>
- <html lang="en">
- <head>
-     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>UPPERLOWER</title>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
- </head>
- <body>
- 
-     <h1>UPPERLOWER</h1>
-     <div id="cardDisplay"></div>
-     <button id="higher">HIGHER</button>
-     <button id="lower">LOWER</button>
-     <button id="restart" style="display:none;">RESTART</button>
- 
-     <p id="result"></p>
-     <p id="prize"></p>
- 
-     <a href="/kazalo">INDEX</a>
- 
-     <script>
-         const cardNames = [
-             "ace", "two", "three", "four", "five",
-             "six", "seven", "eight", "nine", "ten",
-             "jack", "queen", "king"
-         ];
- 
-         let cards = [];
-         let currentIndex = 0;
-         let gameOver = false;
- 
-         function generateCards() {
-             return [
-                 Math.floor(Math.random() * 13) + 1,
-                 Math.floor(Math.random() * 13) + 1,
-                 Math.floor(Math.random() * 13) + 1,
-                 Math.floor(Math.random() * 13) + 1
-             ];
-         }
- 
- 
-         function getCardImagePath(value) {
-             return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
-         }
- 
-         function showCard(value) {
-             const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
-             $('#cardDisplay').append(img);
-         }
- 
-         function startGame() {
-             cards = generateCards();
-             currentIndex = 0;
-             gameOver = false;
- 
-             $('#cardDisplay').html('');
-             $('#result').text('');
-             $('#prize').text('');
-             $('#higher, #lower').prop('disabled', false);
-             $('#restart').hide();
- 
-             showCard(cards[0]);
-         }
- 
-         function endGame(message) {
-             $('#result').text(message);
-             $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
-             $('#higher, #lower').prop('disabled', true);
-             $('#restart').show();
- 
-             for (let i = currentIndex + 1; i < cards.length; i++) {
-                 showCard(cards[i]);
-             }
-         }
- 
-         function handleGuess(guess) {
-             if (gameOver) return;
- 
-             let current = cards[currentIndex];
-             let next = cards[currentIndex + 1];
- 
-             showCard(next);
- 
-             if (next === current) {
-                 endGame("Same cards! Game over.");
-                 gameOver = true;
-                 return;
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPPERLOWER</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        .card-img {
+            width: 120px;      /* ali poljubna želena širina */
+            height: auto;      /* ohrani razmerje stranic */
+            margin: 5px;
+        }
+        #cardDisplay {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>UPPERLOWER</h1>
+    <div id="cardDisplay"></div>
+    <button id="higher">HIGHER</button>
+    <button id="lower">LOWER</button>
+    <button id="restart" style="display:none;">RESTART</button>
+
+    <p id="result"></p>
+    <p id="prize"></p>
+
+    <a href="/kazalo">INDEX</a>
+
+    <script>
+        const cardNames = [
+            "ace", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine", "ten",
+            "jack", "queen", "king"
+        ];
+
+        let cards = [];
+        let currentIndex = 0;
+        let gameOver = false;
+
+        function generateCards() {
+            return [
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1,
+                Math.floor(Math.random() * 13) + 1
+            ];
+        }
+
+        function getCardImagePath(value) {
+            return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
+        }
+
+        function showCard(value) {
+            const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
+            $('#cardDisplay').append(img);
+        }
+
+        function startGame() {
+            cards = generateCards();
+            currentIndex = 0;
+            gameOver = false;
+
+            $('#cardDisplay').html('');
+            $('#result').text('');
+            $('#prize').text('');
+            $('#higher, #lower').prop('disabled', false);
+            $('#restart').hide();
+
+            showCard(cards[0]);
+        }
+
+        function endGame(message) {
+            $('#result').text(message);
+            $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
+            $('#higher, #lower').prop('disabled', true);
+            $('#restart').show();
+
+            for (let i = currentIndex + 1; i < cards.length; i++) {
+                showCard(cards[i]);
+            }
+        }
+
+        function handleGuess(guess) {
+            if (gameOver) return;
+
+            let current = cards[currentIndex];
+            let next = cards[currentIndex + 1];
+
+            showCard(next);
+
+            if (next === current) {
+                endGame("Same cards! Game over.");
+                gameOver = true;
+                return;
             }
             if ((guess === 'U' && next > current) || (guess === 'L' && next < current)) {
                 currentIndex++;
@@ -98,12 +109,13 @@
                 gameOver = true;
             }
         }
+
         $('#higher').click(() => handleGuess('U'));
         $('#lower').click(() => handleGuess('L'));
         $('#restart').click(() => startGame());
         startGame();
- 
-     </script>
- 
- </body>
- </html>
+
+    </script>
+
+</body>
+</html>
