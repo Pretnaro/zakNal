@@ -8,7 +8,9 @@ app = Flask(__name__)
 app.secret_key = "UltraSigma"
 
 db = TinyDB('users.json')
-users = db.table('uporabniki')  
+users = db.table('uporabniki') 
+realdb = TinyDB('realusers.json')
+realusers = realdb.table('uporabniki') 
 User = Query()
 
 @app.route('/')
@@ -49,8 +51,10 @@ def reallogin():
         try:
             username = request.form['username']
             password = request.form['password']
-            image = request.form.get('image')  
-            user = users.get(User.username == username)          
+            image = request.form.get('image') 
+
+            user = realusers.get(User.username == username) 
+
             if user:
                 if user['password'] == password:
                     session['username'] = username
@@ -59,7 +63,12 @@ def reallogin():
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
-                users.insert({'username': username, 'password': password, 'balance': 1000})
+                realusers.insert({
+                    'username': username,
+                    'password': password,
+                    'balance': 1000,
+                    'image': image 
+                })
                 session['username'] = username
                 session['reallogin'] = True
                 return jsonify({'success': True, 'redirect': url_for('realkazalo')})
@@ -67,6 +76,7 @@ def reallogin():
             print(f"Napaka pri prijavi: {str(e)}")
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
     return render_template('reallogin.html')
+
 
 @app.route('/logout')
 def logout():
