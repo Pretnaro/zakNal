@@ -152,7 +152,7 @@
     
     <div class="user-section">
         <b>{{ session.username }}</b>
-        <b>Balance: <span id="balance">1000</span> €</b>
+        <b>Balance: <span id="balance">{{ balance }}</span> €</b>
         <button onclick="logout()">Odjava</button>
         <button class="add-money-btn" onclick="addMoneyPrompt()">Dodaj denar</button>
     </div>
@@ -162,15 +162,21 @@
             window.location.href = '/logout';
         }
 
-        let balance = 1000;
+        let balance = parseFloat(document.getElementById("balance").innerText);
 
         function updateBalanceDisplay() {
             document.getElementById("balance").innerText = balance.toFixed(2);
         }
 
         function addMoney(amount) {
-            balance += amount;
-            updateBalanceDisplay();
+            $.post('/api/add_money', { amount: amount }, function(response) {
+                if (response.success) {
+                    balance = response.new_balance;
+                    updateBalanceDisplay();
+                } else {
+                    alert("Napaka: " + response.error);
+                }
+            });
         }
 
         function subtractMoney(amount) {

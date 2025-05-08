@@ -44,6 +44,7 @@ def login():
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
     return render_template('login.html')
 
+
 @app.route('/reallogin', methods=['GET', 'POST'])
 def reallogin():
     session['role'] = 'user'
@@ -51,15 +52,15 @@ def reallogin():
         try:
             username = request.form['username']
             password = request.form['password']
-            image = request.form.get('image') 
+            image = request.form.get('image')
 
-            user = realusers.get(User.username == username) 
+            user = realusers.get(User.username == username)
 
             if user:
                 if user['password'] == password:
                     session['username'] = username
-                    session['reallogin'] = True  
-                    return jsonify({'success': True, 'redirect': url_for('realkazalo')})                 
+                    session['reallogin'] = True
+                    return jsonify({'success': True, 'redirect': url_for('realkazalo')})
                 else:
                     return jsonify({'success': False, 'error': 'Napačno geslo'})
             else:
@@ -67,7 +68,7 @@ def reallogin():
                     'username': username,
                     'password': password,
                     'balance': 1000,
-                    'image': image 
+                    'image': image
                 })
                 session['username'] = username
                 session['reallogin'] = True
@@ -76,6 +77,31 @@ def reallogin():
             print(f"Napaka pri prijavi: {str(e)}")
             return jsonify({'success': False, 'error': 'Prišlo je do napake'})
     return render_template('reallogin.html')
+
+
+
+@app.route('/api/add_money', methods=['POST'])
+def api_add_money():
+    if 'username' not in session:
+        return jsonify({'success': False, 'error': 'Uporabnik ni prijavljen.'}), 401
+
+    try:
+        amount = float(request.form['amount'])
+        if amount <= 0:
+            return jsonify({'success': False, 'error': 'Znesek mora biti večji od 0.'}), 400
+
+        username = session['username']
+        User = Query()
+        user = realusers.get(User.username == username)
+
+        if user:
+            new_balance = user['balance'] + amount
+            realusers.update({'balance': new_balance}, User.username == username)
+            return jsonify({'success': True, 'new_balance': new_balance})
+        else:
+            return jsonify({'success': False, 'error': 'Uporabnik ni najden.'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/logout')
@@ -90,11 +116,15 @@ def kazalo():
         return render_template("kazalo.html")
     return redirect(url_for('login'))
 
-@app.route("/realkazalo")
+@app.route('/realkazalo')
 def realkazalo():
-    if 'username' in session and session.get('reallogin'):
-        return render_template("realkazalo.html")
-    return redirect(url_for('login'))
+    if 'username' not in session:
+        return redirect(url_for('reallogin'))
+
+    user = realusers.get(User.username == session['username'])
+    balance = user['balance'] if user else 0
+
+    return render_template('realkazalo.html', balance=balance)
     
 #BLACKJACK
 @app.route("/blackjack")
