@@ -2,489 +2,55 @@
 <html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <title>Roleta - Igra na srečo</title>
+    <title>Roleta</title>
     <style>
-        :root {
-            --primary-color: #00563F;
-            --secondary-color: #D4AF37;
-            --dark-color: #222;
-            --light-color: #f8f8f8;
-            --win-color: #4CAF50;
-            --lose-color: #F44336;
-            --accent-color: #E3A82B;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
-            min-height: 100vh;
-            color: var(--dark-color);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            font-family: Arial, sans-serif;
             padding: 20px;
+            background: #f0f0f0;
         }
-
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 5px solid var(--secondary-color);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
         h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: darkgreen;
         }
-
-        .game-area {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        .controls {
-            flex: 1;
-            min-width: 300px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .roulette-table {
-            flex: 2;
-            min-width: 300px;
-            background: var(--primary-color);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            color: white;
-        }
-
-        .table-grid {
-            display: grid;
-            grid-template-columns: repeat(13, 1fr);
-            gap: 2px;
-            margin-top: 15px;
-        }
-
-        .cell {
-            aspect-ratio: 1/1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            border-radius: 4px;
-            user-select: none;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        .cell:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
-        }
-
-        .cell.red {
-            background-color: #C41E3A;
-        }
-
-        .cell.black {
-            background-color: #000000;
-        }
-
-        .cell.green {
-            background-color: #00563F;
-        }
-
-        .zero {
-            grid-column: 1;
-            grid-row: 1 / span 3;
-        }
-
-        .special-bet {
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            text-align: center;
-            padding: 10px 5px;
-        }
-
-        .dozen {
-            grid-column: span 4;
-        }
-
-        .column {
-            grid-column: 13;
-        }
-
-        .half, .odd-even, .color-bet {
-            grid-column: span 2;
-        }
-
-        .bottom-row {
-            margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 2px;
-        }
-
-        /* Spinning Wheel Styles */
-        .wheel-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 20px;
-        }
-
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3), 
-                        inset 0 0 10px rgba(0, 0, 0, 0.5);
-            transition: transform 6s cubic-bezier(0.1, 0.7, 0.1, 1);
-            transform: rotate(0deg);
-            background: conic-gradient(
-                #00563F 0deg 9.73deg,
-                #C41E3A 9.73deg 19.46deg,
-                #000000 19.46deg 29.19deg,
-                #C41E3A 29.19deg 38.92deg,
-                #000000 38.92deg 48.65deg,
-                #C41E3A 48.65deg 58.38deg,
-                #000000 58.38deg 68.11deg,
-                #C41E3A 68.11deg 77.84deg,
-                #000000 77.84deg 87.57deg,
-                #C41E3A 87.57deg 97.3deg,
-                #000000 97.3deg 107.03deg,
-                #C41E3A 107.03deg 116.76deg,
-                #000000 116.76deg 126.49deg,
-                #C41E3A 126.49deg 136.22deg,
-                #000000 136.22deg 145.95deg,
-                #C41E3A 145.95deg 155.68deg,
-                #000000 155.68deg 165.41deg,
-                #C41E3A 165.41deg 175.14deg,
-                #000000 175.14deg 184.87deg,
-                #C41E3A 184.87deg 194.6deg,
-                #000000 194.6deg 204.33deg,
-                #C41E3A 204.33deg 214.06deg,
-                #000000 214.06deg 223.79deg,
-                #C41E3A 223.79deg 233.52deg,
-                #000000 233.52deg 243.25deg,
-                #C41E3A 243.25deg 252.98deg,
-                #000000 252.98deg 262.71deg,
-                #C41E3A 262.71deg 272.44deg,
-                #000000 272.44deg 282.17deg,
-                #C41E3A 282.17deg 291.9deg,
-                #000000 291.9deg 301.63deg,
-                #C41E3A 301.63deg 311.36deg,
-                #000000 311.36deg 321.09deg,
-                #C41E3A 321.09deg 330.82deg,
-                #000000 330.82deg 340.55deg,
-                #C41E3A 340.55deg 350.28deg,
-                #000000 350.28deg 360deg
-            );
-        }
-
-        .wheel-inner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 75%;
-            height: 75%;
-            background: radial-gradient(circle at center, var(--secondary-color), var(--primary-color));
-            border-radius: 50%;
-            z-index: 2;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .wheel-marker {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 20px solid var(--accent-color);
-            z-index: 3;
-        }
-
-        .spinning {
-            animation: spin 3s cubic-bezier(0.5, 0, 0.5, 1) forwards;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(3600deg); }
-        }
-
-        /* Better Button Styles */
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+        select, button {
+            padding: 10px;
             font-size: 16px;
-            margin-bottom: 20px;
-            background-color: white;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            margin: 10px 0;
         }
-
-        select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(0, 86, 63, 0.2);
-        }
-
-        button {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 6px 12px rgba(227, 168, 43, 0.3);
-        }
-
-        button:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: all 0.6s ease;
-        }
-
-        button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(227, 168, 43, 0.4);
-        }
-
-        button:hover:before {
-            left: 100%;
-        }
-
-        button:active {
-            transform: translateY(1px);
-            box-shadow: 0 3px 8px rgba(227, 168, 43, 0.3);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #777, #555);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-secondary:hover {
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-        }
-
         .result {
             margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            font-size: 18px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .win {
-            background-color: rgba(76, 175, 80, 0.2);
-            border-left: 5px solid var(--win-color);
-        }
-
-        .lose {
-            background-color: rgba(244, 67, 54, 0.2);
-            border-left: 5px solid var(--lose-color);
-        }
-
-        .highlight {
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .game-area {
-                flex-direction: column;
-            }
-            .table-grid {
-                grid-template-columns: repeat(12, 1fr);
-            }
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>🎰 ROLETA - Igra na srečo</h1>
-    </header>
+    <h1>Roleta - Izberi svojo stavo</h1>
+    <label for="choice">Izbira:</label>
+    <select id="choice">
+        <optgroup label="Številke">
+            <option value="0">0</option>
+            <!-- Lahko dodaš še 1-36 z JavaScriptom spodaj -->
+        </optgroup>
+        <optgroup label="Kategorije">
+            <option value="firstthird">Prva tretjina (1-12)</option>
+            <option value="secondthird">Druga tretjina (13-24)</option>
+            <option value="thirdthird">Tretja tretjina (25-36)</option>
+            <option value="odd">Lihe</option>
+            <option value="even">Sode</option>
+            <option value="red">Rdeče</option>
+            <option value="black">Črne</option>
+            <option value="firsthalf">Prva polovica (1-18)</option>
+            <option value="secondhalf">Druga polovica (19-36)</option>
+            <option value="firsttol">Prvi stolpec</option>
+            <option value="secondtol">Drugi stolpec</option>
+            <option value="thirdtol">Tretji stolpec</option>
+        </optgroup>
+    </select>
+    <br>
+    <button onclick="play()">Vrti!</button>
 
-    <div class="container">
-        <div class="game-area">
-            <div class="controls">
-                <div class="wheel-container">
-                    <div class="wheel" id="roulette-wheel"></div>
-                    <div class="wheel-inner" id="wheel-result">0</div>
-                    <div class="wheel-marker"></div>
-                </div>
-                
-                <label for="choice">Izberi svojo stavo:</label>
-                <select id="choice">
-                    <optgroup label="Številke">
-                        <option value="0">0</option>
-                        <!-- Številke od 1-36 bodo dodane s pomočjo JavaScript -->
-                    </optgroup>
-                    <optgroup label="Kategorije">
-                        <option value="firstthird">Prva tretjina (1-12)</option>
-                        <option value="secondthird">Druga tretjina (13-24)</option>
-                        <option value="thirdthird">Tretja tretjina (25-36)</option>
-                        <option value="odd">Lihe številke</option>
-                        <option value="even">Sode številke</option>
-                        <option value="red">Rdeče številke</option>
-                        <option value="black">Črne številke</option>
-                        <option value="firsthalf">Prva polovica (1-18)</option>
-                        <option value="secondhalf">Druga polovica (19-36)</option>
-                        <option value="firsttol">Prvi stolpec</option>
-                        <option value="secondtol">Drugi stolpec</option>
-                        <option value="thirdtol">Tretji stolpec</option>
-                    </optgroup>
-                </select>
-                
-                <div class="btn-group">
-                    <button onclick="play()" class="btn-primary">💰 ZAVRTI KOLO! 💰</button>
-                </div>
-                
-                <div class="btn-group">
-                    <button onclick="document.getElementById('choice').value='red'" class="btn-secondary">Rdeče</button>
-                    <button onclick="document.getElementById('choice').value='black'" class="btn-secondary">Črne</button>
-                </div>
-            </div>
-
-            <div class="roulette-table">
-                <h2>Ruleta tabela</h2>
-                <div class="table-grid">
-                    <!-- Zero -->
-                    <div class="cell green zero" data-value="0">0</div>
-                    
-                    <!-- Numbers grid -->
-                    <div class="cell red" data-value="3">3</div>
-                    <div class="cell black" data-value="6">6</div>
-                    <div class="cell red" data-value="9">9</div>
-                    <div class="cell red" data-value="12">12</div>
-                    <div class="cell black" data-value="15">15</div>
-                    <div class="cell red" data-value="18">18</div>
-                    <div class="cell red" data-value="21">21</div>
-                    <div class="cell black" data-value="24">24</div>
-                    <div class="cell red" data-value="27">27</div>
-                    <div class="cell red" data-value="30">30</div>
-                    <div class="cell black" data-value="33">33</div>
-                    <div class="cell red" data-value="36">36</div>
-                    <div class="cell column special-bet" data-value="thirdtol">2:1</div>
-                    
-                    <div class="cell black" data-value="2">2</div>
-                    <div class="cell red" data-value="5">5</div>
-                    <div class="cell black" data-value="8">8</div>
-                    <div class="cell black" data-value="11">11</div>
-                    <div class="cell red" data-value="14">14</div>
-                    <div class="cell black" data-value="17">17</div>
-                    <div class="cell black" data-value="20">20</div>
-                    <div class="cell red" data-value="23">23</div>
-                    <div class="cell black" data-value="26">26</div>
-                    <div class="cell black" data-value="29">29</div>
-                    <div class="cell red" data-value="32">32</div>
-                    <div class="cell black" data-value="35">35</div>
-                    <div class="cell column special-bet" data-value="secondtol">2:1</div>
-                    
-                    <div class="cell red" data-value="1">1</div>
-                    <div class="cell black" data-value="4">4</div>
-                    <div class="cell red" data-value="7">7</div>
-                    <div class="cell black" data-value="10">10</div>
-                    <div class="cell black" data-value="13">13</div>
-                    <div class="cell red" data-value="16">16</div>
-                    <div class="cell red" data-value="19">19</div>
-                    <div class="cell black" data-value="22">22</div>
-                    <div class="cell red" data-value="25">25</div>
-                    <div class="cell black" data-value="28">28</div>
-                    <div class="cell black" data-value="31">31</div>
-                    <div class="cell red" data-value="34">34</div>
-                    <div class="cell column special-bet" data-value="firsttol">2:1</div>
-                </div>
-                
-                <div class="bottom-row">
-                    <div class="special-bet dozen" data-value="firstthird">1-12</div>
-                    <div class="special-bet dozen" data-value="secondthird">13-24</div>
-                    <div class="special-bet dozen" data-value="thirdthird">25-36</div>
-                </div>
-                
-                <div class="bottom-row">
-                    <div class="special-bet half" data-value="firsthalf">1-18</div>
-                    <div class="special-bet odd-even" data-value="odd">LIHE</div>
-                    <div class="special-bet color-bet" data-value="red" style="color: #C41E3A;">RDEČE</div>
-                    <div class="special-bet color-bet" data-value="black">ČRNE</div>
-                    <div class="special-bet odd-even" data-value="even">SODE</div>
-                    <div class="special-bet half" data-value="secondhalf">19-36</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="result hidden" id="result"></div>
-        <a href="/kazalo">INDEX</a>
-    </div>
+    <div class="result" id="result"></div>
+    <a href="/kazalo">INDEX</a>
 
     <script>
         // Dinamično dodaj številke od 1 do 36
@@ -496,138 +62,22 @@
             numberGroup.appendChild(option);
         }
 
-        // Določi barve številk
-        const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-        
-        // Dodaj poslušalce dogodkov za celice tabele
-        const cells = document.querySelectorAll('.cell, .special-bet');
-        cells.forEach(cell => {
-            cell.addEventListener('click', function() {
-                const value = this.getAttribute('data-value');
-                document.getElementById('choice').value = value;
-            });
-        });
-
         function play() {
             const choice = document.getElementById("choice").value;
-            
-            // Simuliraj zavrtitev kolesa
-            simulateSpin();
-            
-            // Nato pošlji zahtevo na strežnik
             fetch(`/roletaGet?choice=${choice}`)
                 .then(res => res.json())
                 .then(data => {
-                    // Set a timeout to give the wheel time to spin
-                    setTimeout(() => {
-                        stopSpinning(data.number);
-                        showResult(data);
-                        highlightResult(data.number);
-                    }, 3000);
+                    const resEl = document.getElementById("result");
+                    resEl.innerHTML = `
+                        <strong>Izžrebana številka:</strong> ${data.number} <br>
+                        <strong>Tvoja izbira:</strong> ${data.choice} <br>
+                        <strong>Rezultat:</strong> ${data.result === "WIN" ? "ZMAGAL SI!" : "IZGUBIL SI!"}
+                    `;
                 })
                 .catch(err => {
                     document.getElementById("result").innerText = "Napaka pri pošiljanju zahteve.";
-                    document.getElementById("result").classList.remove("hidden");
                     console.error(err);
                 });
-        }
-
-        function simulateSpin() {
-            // Skrij prejšnji rezultat
-            const resultEl = document.getElementById("result");
-            resultEl.classList.add("hidden");
-            
-            // Odstrani prejšnje označbe
-            document.querySelectorAll('.highlight').forEach(el => {
-                el.classList.remove('highlight');
-            });
-            
-            // Reset wheel display
-            document.getElementById('wheel-result').textContent = "?";
-            
-            // Spin the roulette wheel
-            const wheel = document.getElementById('roulette-wheel');
-            
-            // Remove any previous animation
-            wheel.style.transition = 'none';
-            wheel.style.transform = 'rotate(0deg)';
-            
-            // Force reflow
-            void wheel.offsetWidth;
-            
-            // Start new spin animation
-            wheel.style.transition = 'transform 3s cubic-bezier(0.2, 0.8, 0.2, 1)';
-            wheel.style.transform = `rotate(${3600 + Math.random() * 360}deg)`;
-            
-            // Show spinning message
-            resultEl.innerHTML = "<p>Kolo se vrti...</p>";
-            resultEl.classList.remove("hidden", "win", "lose");
-        }
-        
-        function stopSpinning(number) {
-            // Update the wheel center with the result
-            document.getElementById('wheel-result').textContent = number;
-            
-            // Add a flash effect to the result
-            const wheelInner = document.getElementById('wheel-result');
-            wheelInner.style.animation = 'none';
-            void wheelInner.offsetWidth;
-            wheelInner.style.animation = 'pulse 0.5s 3';
-        }
-
-        function showResult(data) {
-            const resultEl = document.getElementById("result");
-            
-            // Pripravi sporočilo o rezultatu
-            let message = `
-                <h2>Rezultat</h2>
-                <p><strong>Izžrebana številka:</strong> ${data.number} 
-                   ${redNumbers.includes(parseInt(data.number)) ? 
-                     '<span style="color: #C41E3A;">(RDEČA)</span>' : 
-                     data.number === '0' ? '<span style="color: #00563F;">(ZELENA)</span>' : 
-                     '<span style="color: #000;">(ČRNA)</span>'}
-                </p>
-                <p><strong>Tvoja izbira:</strong> ${getChoiceText(data.choice)}</p>
-                <p class="result-text"><strong>Rezultat:</strong> ${data.result === "WIN" ? "ZMAGAL SI! 🎉" : "IZGUBIL SI! 😢"}</p>
-            `;
-            
-            resultEl.innerHTML = message;
-            
-            // Dodaj razred za stil glede na rezultat
-            resultEl.classList.remove("hidden", "win", "lose");
-            if (data.result === "WIN") {
-                resultEl.classList.add("win");
-            } else {
-                resultEl.classList.add("lose");
-            }
-        }
-
-        function highlightResult(number) {
-            // Najprej poišči celico z izžrebano številko
-            const targetCell = document.querySelector(`.cell[data-value="${number}"]`);
-            if (targetCell) {
-                targetCell.classList.add('highlight');
-            }
-        }
-
-        function getChoiceText(choice) {
-            // Pretvori vrednost izbire v uporabniku prijazen tekst
-            const choiceMap = {
-                "firstthird": "Prva tretjina (1-12)",
-                "secondthird": "Druga tretjina (13-24)",
-                "thirdthird": "Tretja tretjina (25-36)",
-                "odd": "Lihe številke",
-                "even": "Sode številke",
-                "red": "Rdeče številke",
-                "black": "Črne številke",
-                "firsthalf": "Prva polovica (1-18)",
-                "secondhalf": "Druga polovica (19-36)",
-                "firsttol": "Prvi stolpec",
-                "secondtol": "Drugi stolpec",
-                "thirdtol": "Tretji stolpec"
-            };
-            
-            return choiceMap[choice] || choice;
         }
     </script>
 </body>

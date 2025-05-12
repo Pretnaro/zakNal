@@ -9,34 +9,58 @@
 <body>
 
     <h1>SLOTS</h1>
+
+    <p>
+        Vnesi stavo (€): 
+        <input type="number" id="stakeInput" min="1" value="1">
+    </p>
+
     <button id="spinButton">Spin</button>
+
     <p id="numbers">
         <img id="img1" src="" width="100">
         <img id="img2" src="" width="100">
         <img id="img3" src="" width="100">
     </p>
+
     <p id="result"></p>
     <p id="prize"></p>
+    <p id="balanceDisplay"></p>
+
     <a href="/realkazalo">INDEX</a>
+
     <script>
         $(document).ready(function() {
             $("#spinButton").click(function() {
+                const stake = parseFloat($("#stakeInput").val());
+
                 $.ajax({
                     url: "/slotsGet",
-                    method: "GET",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ stake: stake }),
                     success: function(response) {
+                        if (response.error) {
+                            $("#result").text("Napaka: " + response.error);
+                            return;
+                        }
+
                         $("#img1").attr("src", response.numbers[0]);
                         $("#img2").attr("src", response.numbers[1]);
                         $("#img3").attr("src", response.numbers[2]);
+
                         $("#result").text(response.result);
-                        $("#prize").text("Prize: " + response.prize + "€");
+                        $("#prize").text("Dobitek: " + response.prize + "€");
+                        $("#balanceDisplay").text("Trenutno stanje: " + response.balance + "€");
                     },
                     error: function(error) {
-                        console.error("Error:", error);
+                        console.error("Napaka pri zahtevi:", error);
+                        $("#result").text("Napaka pri pošiljanju zahteve.");
                     }
                 });
             });
         });
     </script>
+
 </body>
 </html>

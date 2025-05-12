@@ -1,42 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SLOTS</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Roleta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        h1 {
+            color: darkgreen;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
+    <h1>Roleta - Izberi svojo stavo</h1>
+    <label for="choice">Izbira:</label>
+    <select id="choice">
+        <optgroup label="Številke">
+            <option value="0">0</option>
+            <!-- Lahko dodaš še 1-36 z JavaScriptom spodaj -->
+        </optgroup>
+        <optgroup label="Kategorije">
+            <option value="firstthird">Prva tretjina (1-12)</option>
+            <option value="secondthird">Druga tretjina (13-24)</option>
+            <option value="thirdthird">Tretja tretjina (25-36)</option>
+            <option value="odd">Lihe</option>
+            <option value="even">Sode</option>
+            <option value="red">Rdeče</option>
+            <option value="black">Črne</option>
+            <option value="firsthalf">Prva polovica (1-18)</option>
+            <option value="secondhalf">Druga polovica (19-36)</option>
+            <option value="firsttol">Prvi stolpec</option>
+            <option value="secondtol">Drugi stolpec</option>
+            <option value="thirdtol">Tretji stolpec</option>
+        </optgroup>
+    </select>
+    <br>
+    <button onclick="play()">Vrti!</button>
 
-    <h1>SLOTS</h1>
-    <button id="spinButton">Spin</button>
-    <p id="numbers">
-        <img id="img1" src="" width="100">
-        <img id="img2" src="" width="100">
-        <img id="img3" src="" width="100">
-    </p>
-    <p id="result"></p>
-    <p id="prize"></p>
+    <div class="result" id="result"></div>
     <a href="/realkazalo">INDEX</a>
+
     <script>
-        $(document).ready(function() {
-            $("#spinButton").click(function() {
-                $.ajax({
-                    url: "/slotsGet",
-                    method: "GET",
-                    success: function(response) {
-                        $("#img1").attr("src", response.numbers[0]);
-                        $("#img2").attr("src", response.numbers[1]);
-                        $("#img3").attr("src", response.numbers[2]);
-                        $("#result").text(response.result);
-                        $("#prize").text("Prize: " + response.prize + "€");
-                    },
-                    error: function(error) {
-                        console.error("Error:", error);
-                    }
+        // Dinamično dodaj številke od 1 do 36
+        const numberGroup = document.querySelector('optgroup[label="Številke"]');
+        for (let i = 1; i <= 36; i++) {
+            const option = document.createElement('option');
+            option.value = i.toString();
+            option.textContent = i.toString();
+            numberGroup.appendChild(option);
+        }
+
+        function play() {
+            const choice = document.getElementById("choice").value;
+            fetch(`/roletaGet?choice=${choice}`)
+                .then(res => res.json())
+                .then(data => {
+                    const resEl = document.getElementById("result");
+                    resEl.innerHTML = `
+                        <strong>Izžrebana številka:</strong> ${data.number} <br>
+                        <strong>Tvoja izbira:</strong> ${data.choice} <br>
+                        <strong>Rezultat:</strong> ${data.result === "WIN" ? "ZMAGAL SI!" : "IZGUBIL SI!"}
+                    `;
+                })
+                .catch(err => {
+                    document.getElementById("result").innerText = "Napaka pri pošiljanju zahteve.";
+                    console.error(err);
                 });
-            });
-        });
+        }
     </script>
 </body>
 </html>
