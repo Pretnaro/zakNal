@@ -254,181 +254,363 @@
         </div>
     </div>
 
-<script>
-let playerChips = 1000;
-let currentBet = 0;
-let deck = [];
-let playerHand = [];
-let dealerHand = [];
-
-// Ustvari krov kart
-function createDeck() {
-    const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
-    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    deck = [];
-    for (let suit of suits) {
-        for (let value of values) {
-            deck.push({ value, suit });
+    <script>
+        // Card classes
+        class Card {
+            constructor(value, suit) {
+                this.value = value;
+                this.suit = suit;
+                this.hidden = false;
+            }
+            
+            getNumericValue() {
+                if (this.value === 'A') return 11;
+                if (['J', 'Q', 'K'].includes(this.value)) return 10;
+                return parseInt(this.value);
+            }
+            
+            getDisplayValue() {
+                return this.value;
+            }
+            
+            getSuitSymbol() {
+                switch(this.suit) {
+                    case 'hearts': return '♥';
+                    case 'diamonds': return '♦';
+                    case 'clubs': return '♣';
+                    case 'spades': return '♠';
+                }
+            }
+            
+            getHTML() {
+                if (this.hidden) {
+                    return `<div class="card hidden"></div>`;
+                }
+                
+                const isRed = this.suit === 'hearts' || this.suit === 'diamonds';
+                const suitClass = isRed ? this.suit : this.suit;
+                
+                return `<div class="card ${suitClass} fade-in">
+                    <div class="card-suit">${this.getSuitSymbol()}</div>
+                    <div class="card-value">${this.getDisplayValue()}</div>
+                    <div class="card-suit-bottom">${this.getSuitSymbol()}</div>
+                </div>`;
+            }
         }
-    }
-}
-
-// Premeša krov
-function shuffleDeck() {
-    for (let i = deck.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-}
-
-// Računa vrednost roke
-function calculateHandValue(hand) {
-    let value = 0;
-    let aceCount = 0;
-    for (let card of hand) {
-        if (['J', 'Q', 'K'].includes(card.value)) {
-            value += 10;
-        } else if (card.value === 'A') {
-            aceCount++;
-            value += 11;
-        } else {
-            value += parseInt(card.value);
+        
+        // Game state
+        let deck = [];
+        let playerCards = [];
+        let dealerCards = [];
+        let gameInProgress = false;
+        let playerChips = 1000;
+        let currentBet = 0;
+        let playerStood = false;
+        
+        // Initialize deck
+        function createDeck() {
+            const suits = ['hearts', 'diamonds', 'clubs', 'spades'];
+            const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+            let newDeck = [];
+            
+            for (let suit of suits) {
+                for (let value of values) {
+                    newDeck.push(new Card(value, suit));
+                }
+            }
+            
+            return shuffleDeck(newDeck);
         }
-    }
-    while (value > 21 && aceCount > 0) {
-        value -= 10;
-        aceCount--;
-    }
-    return value;
-}
-
-// Prikaže roke
-function displayHands() {
-    document.getElementById('player-hand').innerHTML = playerHand.map(card => `${card.value} ${card.suit}`).join(', ');
-    document.getElementById('dealer-hand').innerHTML = dealerHand.map(card => `${card.value} ${card.suit}`).join(', ');
-}
-
-// Posodobi prikaz žetonov in stave
-function updateBetUI() {
-    document.getElementById('chip-count').innerText = playerChips;
-    document.getElementById('current-bet').innerText = currentBet;
-    document.getElementById('deal-button').disabled = currentBet === 0;
-}
-
-// Doda stavo
-function placeBet(amount) {
-    if (playerChips >= amount) {
-        playerChips -= amount;
-        currentBet += amount;
-        updateBetUI();
-    }
-}
-
-// Ponastavi stavo
-function resetBet() {
-    playerChips += currentBet;
-    currentBet = 0;
-    updateBetUI();
-}
-
-// Začne igro
-function dealCards() {
-    if (currentBet === 0) return;
-    document.getElementById('status').innerText = '';
-    createDeck();
-    shuffleDeck();
-
-    playerHand = [deck.pop(), deck.pop()];
-    dealerHand = [deck.pop(), deck.pop()];
-    displayHands();
-
-    document.getElementById('deal-button').disabled = true;
-    document.getElementById('hit-button').disabled = false;
-    document.getElementById('stand-button').disabled = false;
-
-    document.querySelectorAll('.bet-controls button').forEach(btn => btn.disabled = true);
-}
-
-// Igralec vzame karto
-function hit() {
-    playerHand.push(deck.pop());
-    displayHands();
-
-    if (calculateHandValue(playerHand) > 21) {
-        document.getElementById('status').innerText = "Prekoračitev! Izgubil si.";
-        endGame();
-    }
-}
-
-// Igralec ostane
-function stand() {
-    while (calculateHandValue(dealerHand) < 17) {
-        dealerHand.push(deck.pop());
-    }
-    displayHands();
-    compareHands();
-}
-
-// Primerja vrednosti rok
-function compareHands() {
-    const playerValue = calculateHandValue(playerHand);
-    const dealerValue = calculateHandValue(dealerHand);
-
-    if (dealerValue > 21) {
-        document.getElementById('status').innerText = "Dealer je prekoračil! Zmagal si!";
-        playerChips += currentBet * 2;
-    } else if (playerValue > dealerValue) {
-        document.getElementById('status').innerText = "Zmagal si!";
-        playerChips += currentBet * 2;
-    } else if (playerValue === dealerValue) {
-        document.getElementById('status').innerText = "Izenačeno!";
-        playerChips += currentBet;
-    } else {
-        document.getElementById('status').innerText = "Izgubil si.";
-    }
-
-    endGame();
-}
-
-// Konča igro
-function endGame() {
-    currentBet = 0;
-    updateBetUI();
-
-    document.getElementById('hit-button').disabled = true;
-    document.getElementById('stand-button').disabled = true;
-
-    if (playerChips === 0) {
-        document.getElementById('status').innerText += " Brez žetonov! Igra končana.";
-        document.getElementById('deal-button').disabled = true;
-        document.getElementById('restart-button').style.display = 'inline-block';
-    } else {
-        document.querySelectorAll('.bet-controls button').forEach(btn => btn.disabled = false);
-    }
-}
-
-// Začne znova
-function restartGame() {
-    playerChips = 1000;
-    currentBet = 0;
-    updateBetUI();
-    document.getElementById('deal-button').disabled = true;
-    document.getElementById('status').innerText = '';
-    document.getElementById('restart-button').style.display = 'none';
-    playerHand = [];
-    dealerHand = [];
-    displayHands();
-}
-
-// Inicializacija igre
-function initGame() {
-    updateBetUI();
-    document.getElementById('deal-button').disabled = true;
-    document.getElementById('hit-button').disabled = true;
-    document.getElementById('stand-button').disabled = true;
-    document.getElementById('restart-button').style.display = 'none';
-    document.getElementById('status').innerText = '';
-}
-</script>
+        
+        // Shuffle deck
+        function shuffleDeck(deck) {
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+        
+        // Draw a card from deck
+        function drawCard() {
+            if (deck.length === 0) {
+                deck = createDeck();
+            }
+            return deck.pop();
+        }
+        
+        // Calculate hand value
+        function calculateHandValue(cards) {
+            let sum = 0;
+            let aceCount = 0;
+            
+            for (let card of cards) {
+                if (!card.hidden) {
+                    if (card.value === 'A') {
+                        aceCount++;
+                        sum += 11;
+                    } else if (['J', 'Q', 'K'].includes(card.value)) {
+                        sum += 10;
+                    } else {
+                        sum += parseInt(card.value);
+                    }
+                }
+            }
+            
+            // Adjust for aces
+            while (sum > 21 && aceCount > 0) {
+                sum -= 10;
+                aceCount--;
+            }
+            
+            return sum;
+        }
+        
+        // Place bet
+        function placeBet(amount) {
+            if (gameInProgress) return;
+            
+            if (playerChips >= amount) {
+                currentBet += amount;
+                playerChips -= amount;
+                updateBetUI();
+            } else {
+                document.getElementById('status').innerText = "Nimate dovolj žetonov!";
+                document.getElementById('status').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('status').classList.remove('shake');
+                }, 500);
+            }
+        }
+        
+        // Reset bet
+        function resetBet() {
+            if (gameInProgress) return;
+            
+            playerChips += currentBet;
+            currentBet = 0;
+            updateBetUI();
+        }
+        
+        // Update bet UI
+        function updateBetUI() {
+            document.getElementById('chip-count').innerText = playerChips;
+            document.getElementById('bet-amount').innerText = currentBet;
+            
+            // Enable deal button only if bet is placed
+            document.getElementById('deal-button').disabled = currentBet === 0;
+        }
+        
+        // Deal initial cards
+        function dealCards() {
+            if (currentBet === 0) {
+                document.getElementById('status').innerText = "Prosim, postavite stavo!";
+                document.getElementById('status').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('status').classList.remove('shake');
+                }, 500);
+                return;
+            }
+            
+            gameInProgress = true;
+            playerStood = false;
+            
+            // Hide betting controls, show game controls
+            document.getElementById('bet-controls').style.display = 'none';
+            document.getElementById('game-controls').style.display = 'flex';
+            
+            // Reset status
+            document.getElementById('status').innerText = "";
+            
+            // Create new deck if needed
+            if (deck.length < 10) {
+                deck = createDeck();
+            }
+            
+            // Deal cards
+            playerCards = [drawCard(), drawCard()];
+            dealerCards = [drawCard(), drawCard()];
+            dealerCards[0].hidden = true; // Hide first dealer card
+            
+            // Update UI
+            updateUI();
+            
+            // Check for natural blackjack
+            checkForNaturalBlackjack();
+            
+            // Enable/disable double down
+            document.getElementById('double-button').disabled = calculateHandValue(playerCards) > 11;
+        }
+        
+        // Check for natural blackjack
+        function checkForNaturalBlackjack() {
+            const playerValue = calculateHandValue(playerCards);
+            
+            if (playerValue === 21) {
+                // Show dealer's hidden card
+                dealerCards[0].hidden = false;
+                updateUI();
+                
+                const dealerValue = calculateHandValue(dealerCards);
+                
+                if (dealerValue === 21) {
+                    // Push - both have blackjack
+                    document.getElementById('status').innerText = "Izenačeno - oba imata blackjack!";
+                    playerChips += currentBet;
+                } else {
+                    // Player wins with blackjack (pays 3:2)
+                    document.getElementById('status').innerText = "Blackjack! Zmagal si!";
+                    playerChips += currentBet * 2.5;
+                }
+                
+                endGame();
+            }
+        }
+        
+        // Hit - draw another card
+        function hit() {
+            if (!gameInProgress || playerStood) return;
+            
+            playerCards.push(drawCard());
+            updateUI();
+            
+            const playerValue = calculateHandValue(playerCards);
+            
+            if (playerValue > 21) {
+                document.getElementById('status').innerText = "Bust! Izgubil si.";
+                endGame();
+            } else if (playerValue === 21) {
+                // Automatically stand if player hits 21
+                stand();
+            }
+            
+            // Disable double down after hit
+            document.getElementById('double-button').disabled = true;
+        }
+        
+        // Stand - end player turn
+        function stand() {
+            if (!gameInProgress || playerStood) return;
+            
+            playerStood = true;
+            
+            // Reveal dealer's hidden card
+            dealerCards[0].hidden = false;
+            updateUI();
+            
+            // Dealer draws until 17 or higher
+            dealerPlay();
+        }
+        
+        // Double Down
+        function doubleDown() {
+            if (!gameInProgress || playerStood || playerCards.length > 2 || playerChips < currentBet) return;
+            
+            // Double the bet
+            playerChips -= currentBet;
+            currentBet *= 2;
+            updateBetUI();
+            
+            // Draw one more card and stand
+            playerCards.push(drawCard());
+            updateUI();
+            
+            const playerValue = calculateHandValue(playerCards);
+            
+            if (playerValue > 21) {
+                document.getElementById('status').innerText = "Bust! Izgubil si.";
+                endGame();
+            } else {
+                stand();
+            }
+        }
+        
+        // Dealer's turn
+        function dealerPlay() {
+            let dealerValue = calculateHandValue(dealerCards);
+            
+            const dealerTurn = () => {
+                if (dealerValue < 17) {
+                    dealerCards.push(drawCard());
+                    updateUI();
+                    dealerValue = calculateHandValue(dealerCards);
+                    setTimeout(dealerTurn, 600);
+                } else {
+                    compareHands();
+                }
+            };
+            
+            setTimeout(dealerTurn, 600);
+        }
+        
+        // Compare hands and determine winner
+        function compareHands() {
+            const playerValue = calculateHandValue(playerCards);
+            const dealerValue = calculateHandValue(dealerCards);
+            
+            if (dealerValue > 21) {
+                document.getElementById('status').innerText = "Dealer bust! Zmagal si!";
+                playerChips += currentBet * 2;
+            } else if (playerValue > dealerValue) {
+                document.getElementById('status').innerText = "Zmagal si!";
+                playerChips += currentBet * 2;
+            } else if (playerValue === dealerValue) {
+                document.getElementById('status').innerText = "Izenačeno!";
+                playerChips += currentBet;
+            } else {
+                document.getElementById('status').innerText = "Izgubil si.";
+            }
+            
+            endGame();
+        }
+        
+        // End the current game
+        function endGame() {
+            gameInProgress = false;
+            currentBet = 0;
+            
+            // Show bet controls, hide game controls
+            setTimeout(() => {
+                document.getElementById('bet-controls').style.display = 'block';
+                document.getElementById('game-controls').style.display = 'none';
+                updateBetUI();
+                
+                // Check if player is out of chips
+                if (playerChips === 0) {
+                    document.getElementById('status').innerText = "Brez žetonov! Igra končana.";
+                    document.getElementById('deal-button').disabled = true;
+                }
+            }, 1500);
+        }
+        
+        // Update UI
+        function updateUI() {
+            // Update cards
+            document.getElementById('player-cards').innerHTML = playerCards.map(card => card.getHTML()).join("");
+            document.getElementById('dealer-cards').innerHTML = dealerCards.map(card => card.getHTML()).join("");
+            
+            // Update scores
+            const playerValue = calculateHandValue(playerCards);
+            document.getElementById('player-score').innerText = `Vrednost: ${playerValue}`;
+            
+            // Only show complete dealer score if game is over
+            if (dealerCards[0].hidden) {
+                document.getElementById('dealer-score').innerHTML = `Vrednost: <span class="hidden-score">?</span>`;
+            } else {
+                const dealerValue = calculateHandValue(dealerCards);
+                document.getElementById('dealer-score').innerText = `Vrednost: ${dealerValue}`;
+            }
+        }
+        
+        // Initialize game
+        function initGame() {
+            deck = createDeck();
+            updateBetUI();
+            document.getElementById('deal-button').disabled = true;
+        }
+        
+        // Start game
+        window.onload = initGame;
+    </script>
 </body>
 </html>
