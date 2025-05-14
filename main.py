@@ -1003,6 +1003,55 @@ def getrealUpperlower():
             result = "BUST"
             break
     return jsonify(result=result, numbers=[img_map[card1], img_map[card2], img_map[card3], img_map[card4] ])
+@app.route("/realupperlowerStart")
+def real_upperlower_start():
+    username = session.get('username')
+    if not username:
+        return jsonify(error="Niste prijavljeni.")
+
+    user = realusers.get(User.username == username)
+    if not user:
+        return jsonify(error="Uporabnik ne obstaja.")
+
+    try:
+        bet = float(request.args.get('bet', 0))
+    except:
+        return jsonify(error="Neveljavna stava.")
+
+    if bet <= 0:
+        return jsonify(error="Stava mora biti večja od 0.")
+    if user['balance'] < bet:
+        return jsonify(error="Premalo sredstev za stavo.")
+
+    # Posodobi stanje
+    new_balance = user['balance'] - bet
+    realusers.update({'balance': new_balance}, User.username == username)
+
+    # Shrani stavo v session (če hočeš jo uporabit kasneje)
+    session['last_bet'] = bet
+
+    cards = [random.randint(1, 13) for _ in range(4)]
+
+    return jsonify(cards=cards, balance=round(new_balance, 2))
+
+@app.route("/realupperlowerWin")
+def real_upperlower_win():
+    username = session.get('username')
+    if not username:
+        return jsonify(error="Niste prijavljeni.")
+
+    user = realusers.get(User.username == username)
+    if not user:
+        return jsonify(error="Uporabnik ne obstaja.")
+
+    bet = session.get('last_bet', 0)
+    prize = round(bet * 2, 2) if bet else 10  # fallback
+
+    new_balance = user['balance'] + prize
+    realusers.update({'balance': new_balance}, User.username == username)
+
+    return jsonify(prize=prize, balance=round(new_balance, 2))
+
 
 
 app.run(debug = True)
