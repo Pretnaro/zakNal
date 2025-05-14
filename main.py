@@ -67,7 +67,7 @@ def reallogin():
                 realusers.insert({
                     'username': username,
                     'password': password,
-                    'balance': 1000,
+                    'balance': 5,
                     'image': image
                 })
                 session['username'] = username
@@ -570,44 +570,49 @@ def getUpperlower():
     return jsonify(result=result, numbers=[img_map[card1], img_map[card2], img_map[card3], img_map[card4] ])
 
 
+#SLOTS
 @app.route("/realslots")
 def realslots():
     return render_template("realslots.html")
 
-@app.route("/slotsGet", methods=["POST"])
-def getrealSlots():
-    data = request.get_json()
-    stake = data.get("stake", 0)
 
-    username = session.get("username")
-    if not username:
-        return jsonify({"error": "Not logged in"}), 401
+@app.route("/realSlotsGet")
+def getRealSlots():
+    if 'username' not in session:
+        return jsonify(result="Niste prijavljeni.", prize=0, balance=0, numbers=["", "", ""])
 
-    with open("realusers.json", "r") as f:
-        users = json.load(f)
+    username = session['username']
+    user = realusers.get(User.username == username)
 
-    user = next((u for u in users if u["username"] == username), None)
     if not user:
-        return jsonify({"error": "User not found"}), 404
+        # Če še ni v realusers bazi, dodaj z začetnim stanjem
+        user = {'username': username, 'balance': 50.0}
+        realusers.insert(user)
+    balance = user['balance']
 
-    if user["balance"] < stake:
-        return jsonify({"error": "Insufficient balance"}), 400
+    if balance < 5:
+        return jsonify(result="Premalo denarja!", prize=0, balance=balance, numbers=["", "", ""])
 
-    user["balance"] -= stake
+    balance -= 5  # Odštej stavo
 
-    rnd1, rnd2, rnd3 = random.randint(1, 9), random.randint(1, 9), random.randint(1, 9)
+    rnd1 = random.randint(1, 9)
+    rnd2 = random.randint(1, 9)
+    rnd3 = random.randint(1, 9)
+
     prize = 0
+    result = "POSKUSI PONOVNO"
+
     if rnd1 == rnd2 == rnd3:
         prize_dict = {
             1: 1, 2: 20, 3: 30, 4: 40, 5: 500,
             6: 60, 7: 1000, 8: 80, 9: 90
         }
         prize = prize_dict.get(rnd1, 0)
+        result = f"ČESTITKE! DOBIL SI {prize}€"
+        balance += prize
 
-    user["balance"] += prize
-
-    with open("realusers.json", "w") as f:
-        json.dump(users, f, indent=4)
+    # Posodobi stanje uporabnika v TinyDB
+    realusers.update({'balance': balance}, User.username == username)
 
     img_map = {
         1: "/static/images/slots/apple.jpg",
@@ -621,14 +626,13 @@ def getrealSlots():
         9: "/static/images/slots/strawberry.jpg",
     }
 
-    result = "ZMAGAL SI!" if prize > 0 else "POSKUSI PONOVNO"
-
     return jsonify(
         result=result,
         prize=prize,
-        balance=user["balance"],
+        balance=round(balance, 2),
         numbers=[img_map[rnd1], img_map[rnd2], img_map[rnd3]]
     )
+
 
 
 

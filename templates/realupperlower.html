@@ -22,100 +22,120 @@
 
     <h1>UPPERLOWER</h1>
     <div id="cardDisplay"></div>
-    <button id="higher">HIGHER</button>
-    <button id="lower">LOWER</button>
+    <button id="higher" disabled>HIGHER</button>
+    <button id="lower" disabled>LOWER</button>
     <button id="restart" style="display:none;">RESTART</button>
+    
 
     <p id="result"></p>
     <p id="prize"></p>
 
     <a href="/realkazalo">INDEX</a>
-
+    <p>
+        Stava: <input type="number" id="betAmount" value="5" min="1"> €
+        <button id="startGame">Začni igro</button>
+    </p>
+    <p id="balance">Stanje: nalagam...</p>
+    
     <script>
-        const cardNames = [
-            "ace", "two", "three", "four", "five",
-            "six", "seven", "eight", "nine", "ten",
-            "jack", "queen", "king"
-        ];
-
         let cards = [];
         let currentIndex = 0;
         let gameOver = false;
-
-        function generateCards() {
-            return [
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1,
-                Math.floor(Math.random() * 13) + 1
-            ];
-        }
-
+        let balance = 0;
+        
         function getCardImagePath(value) {
+            const cardNames = [
+                "ace", "two", "three", "four", "five",
+                "six", "seven", "eight", "nine", "ten",
+                "jack", "queen", "king"
+            ];
             return `static/images/upperlower/${cardNames[value - 1]}.jpg`;
         }
-
+        
         function showCard(value) {
             const img = $('<img>').attr('src', getCardImagePath(value)).addClass('card-img');
             $('#cardDisplay').append(img);
         }
-
-        function startGame() {
-            cards = generateCards();
-            currentIndex = 0;
-            gameOver = false;
-
-            $('#cardDisplay').html('');
-            $('#result').text('');
-            $('#prize').text('');
-            $('#higher, #lower').prop('disabled', false);
-            $('#restart').hide();
-
-            showCard(cards[0]);
+        
+        function updateBalanceDisplay() {
+            $("#balance").text("Stanje: " + balance.toFixed(2) + "€");
         }
-
-        function endGame(message) {
+        
+        function startGame(bet) {
+            $.get("/realupperlowerStart", { bet: bet }, function(response) {
+                if (response.error) {
+                    alert(response.error);
+                    return;
+                }
+                cards = response.cards;
+                balance = response.balance;
+                currentIndex = 0;
+                gameOver = false;
+        
+                $('#cardDisplay').html('');
+                $('#result').text('');
+                $('#prize').text('');
+                $('#restart').hide();
+                $('#higher, #lower').prop('disabled', false);
+        
+                updateBalanceDisplay();
+                showCard(cards[0]);
+            });
+        }
+        
+        function endGame(message, prize) {
             $('#result').text(message);
-            $('#prize').html('Cards were: ' + cards.map(c => cardNames[c - 1]).join(', '));
+            $('#prize').text("Dobitek: " + prize + "€");
             $('#higher, #lower').prop('disabled', true);
             $('#restart').show();
-
+        
             for (let i = currentIndex + 1; i < cards.length; i++) {
                 showCard(cards[i]);
             }
         }
-
+        
         function handleGuess(guess) {
             if (gameOver) return;
-
+        
             let current = cards[currentIndex];
             let next = cards[currentIndex + 1];
-
+        
             showCard(next);
-
+        
             if (next === current) {
-                endGame("Same cards! Game over.");
+                endGame("Isti karti. Konec.", 0);
                 gameOver = true;
                 return;
             }
             if ((guess === 'U' && next > current) || (guess === 'L' && next < current)) {
                 currentIndex++;
                 if (currentIndex === 3) {
-                    endGame("WIN");
-                    gameOver = true;
+                    $.get("/realupperlowerWin", function(response) {
+                        balance = response.balance;
+                        updateBalanceDisplay();
+                        endGame("ZMAGAL SI!", response.prize);
+                        gameOver = true;
+                    });
                 }
             } else {
-                endGame("BUST");
+                endGame("IZGUBIL SI!", 0);
                 gameOver = true;
             }
         }
-
+        
+        $('#startGame').click(() => {
+            const bet = parseFloat($('#betAmount').val());
+            if (isNaN(bet) || bet <= 0) {
+                alert("Vnesi veljavno stavo.");
+                return;
+            }
+            startGame(bet);
+        });
+        
         $('#higher').click(() => handleGuess('U'));
         $('#lower').click(() => handleGuess('L'));
-        $('#restart').click(() => startGame());
-        startGame();
-
-    </script>
-
+        $('#restart').click(() => location.reload());
+        </script>
+        
 </body>
 </html>

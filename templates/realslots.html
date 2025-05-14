@@ -9,58 +9,45 @@
 <body>
 
     <h1>SLOTS</h1>
-
-    <p>
-        Vnesi stavo (€): 
-        <input type="number" id="stakeInput" min="1" value="1">
-    </p>
-
     <button id="spinButton">Spin</button>
-
     <p id="numbers">
         <img id="img1" src="" width="100">
         <img id="img2" src="" width="100">
         <img id="img3" src="" width="100">
     </p>
-
     <p id="result"></p>
     <p id="prize"></p>
-    <p id="balanceDisplay"></p>
-
     <a href="/realkazalo">INDEX</a>
+    <p id="balance">Stanje: nalagam...</p>
 
     <script>
         $(document).ready(function() {
             $("#spinButton").click(function() {
-                const stake = parseFloat($("#stakeInput").val());
-
                 $.ajax({
-                    url: "/slotsGet",
-                    method: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ stake: stake }),
+                    url: "/realSlotsGet",  // popravljeno iz /slotsGet
+                    method: "GET",
                     success: function(response) {
-                        if (response.error) {
-                            $("#result").text("Napaka: " + response.error);
-                            return;
+                        if (response.numbers[0]) {
+                            $("#img1").attr("src", response.numbers[0]);
+                            $("#img2").attr("src", response.numbers[1]);
+                            $("#img3").attr("src", response.numbers[2]);
+                        } else {
+                            $("#img1").attr("src", "");
+                            $("#img2").attr("src", "");
+                            $("#img3").attr("src", "");
                         }
-
-                        $("#img1").attr("src", response.numbers[0]);
-                        $("#img2").attr("src", response.numbers[1]);
-                        $("#img3").attr("src", response.numbers[2]);
-
+    
                         $("#result").text(response.result);
                         $("#prize").text("Dobitek: " + response.prize + "€");
-                        $("#balanceDisplay").text("Trenutno stanje: " + response.balance + "€");
+                        $("#balance").text("Stanje: " + response.balance.toFixed(2) + "€");
                     },
                     error: function(error) {
-                        console.error("Napaka pri zahtevi:", error);
-                        $("#result").text("Napaka pri pošiljanju zahteve.");
+                        console.error("Napaka:", error);
                     }
                 });
             });
         });
     </script>
-
+    
 </body>
 </html>

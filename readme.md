@@ -1,3 +1,5 @@
+pip install -r requirements.txt --user
+
 # PREPROSTA PRVA ONLINE IGRALNICA
 # SHIT NI EASY
 # PROBLEM
