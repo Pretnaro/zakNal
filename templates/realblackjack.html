@@ -10,6 +10,13 @@
 </head>
 <body>
     <h1>Blackjack</h1>
+
+    <label for="bet">Vnesi stavo:</label>
+    <input type="number" id="bet" value="10" min="1">
+    <button onclick="startGame()">Začni igro</button>
+
+    <p>Tvoj balance: <span id="balance">?</span></p>
+
     <div id="dealer-area">
         <h2>Dealer</h2>
         <div id="dealer-cards"></div>
@@ -27,74 +34,91 @@
     </div>
 
     <h3 id="status"></h3>
-    <a href="/realkazalo">INDEX</a>
+    <a href="/realkazalo">Nazaj na kazalo</a>
+
     <script>
         let playerCards = [];
         let dealerCards = [];
-
-        function getRandomCard() {
-            return Math.floor(Math.random() * 11) + 1;
-        }
 
         function sum(cards) {
             return cards.reduce((a, b) => a + b, 0);
         }
 
-        function startGame(){
-            playerCards = [getRandomCard(), getRandomCard()];
-            dealerCards = [getRandomCard(), getRandomCard()];
-            updateUI();
-        }
-
-        function updateUI(){
+        function updateUI() {
             document.getElementById('player-cards').innerHTML = playerCards.map(card => `<div class="card">${card}</div>`).join("");
             document.getElementById('dealer-cards').innerHTML = dealerCards.map(card => `<div class="card">${card}</div>`).join("");
         }
 
-        function hit(){
-            playerCards.push(getRandomCard());
+        async function startGame() {
+            const bet = parseInt(document.getElementById('bet').value);
+
+            const res = await fetch(`/realblackjackStart?bet=${bet}`);
+            const data = await res.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            playerCards = data.playerCards;
+            dealerCards = data.dealerCards;
+            document.getElementById('balance').innerText = data.balance;
+            document.getElementById('status').innerText = "";
+            updateUI();
+        }
+
+        function hit() {
+            playerCards.push(Math.floor(Math.random() * 11) + 1);
             updateUI();
             checkStatus();
         }
 
-        function stand(){
-            while(sum(dealerCards) < 17){
-                dealerCards.push(getRandomCard());
+        function stand() {
+            while (sum(dealerCards) < 17) {
+                dealerCards.push(Math.floor(Math.random() * 11) + 1);
             }
             updateUI();
             checkStatus(true);
         }
 
-        function checkStatus(ended=false){
+        async function reportResult(outcome) {
+            const res = await fetch("/realblackjackResult", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ outcome })
+            });
+            const data = await res.json();
+            document.getElementById('balance').innerText = data.balance;
+        }
+
+        function checkStatus(ended = false) {
             let playerSum = sum(playerCards);
             let dealerSum = sum(dealerCards);
 
-            if(playerSum > 21){
+            if (playerSum > 21) {
                 document.getElementById('status').innerText = "Bust! Izgubil si.";
-            } else if(ended){
-                if(dealerSum > 21 || playerSum > dealerSum){
+                reportResult("lose");
+            } else if (ended) {
+                if (dealerSum > 21 || playerSum > dealerSum) {
                     document.getElementById('status').innerText = "Zmagal si!";
-                } else if(playerSum === dealerSum){
+                    reportResult("win");
+                } else if (playerSum === dealerSum) {
                     document.getElementById('status').innerText = "Izenačeno!";
+                    reportResult("draw");
                 } else {
                     document.getElementById('status').innerText = "Izgubil si.";
+                    reportResult("lose");
                 }
             }
         }
 
-        function resetGame(){
+        function resetGame() {
             playerCards = [];
             dealerCards = [];
             document.getElementById('status').innerText = "";
-            startGame();
+            document.getElementById('player-cards').innerHTML = "";
+            document.getElementById('dealer-cards').innerHTML = "";
         }
-
-        // Init
-        startGame();
     </script>
-
 </body>
-<script>
-
-</script>
 </html>

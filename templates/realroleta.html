@@ -47,6 +47,9 @@
         </optgroup>
     </select>
     <br>
+    <label for="bet">Vnesi stavo (€):</label>
+    <input type="number" id="bet" min="1" required>
+    <br>
     <button onclick="play()">Vrti!</button>
 
     <div class="result" id="result"></div>
@@ -61,24 +64,37 @@
             option.textContent = i.toString();
             numberGroup.appendChild(option);
         }
-
+    
         function play() {
             const choice = document.getElementById("choice").value;
-            fetch(`/roletaGet?choice=${choice}`)
-                .then(res => res.json())
+            const bet = document.getElementById("bet").value;
+    
+            if (!bet || parseInt(bet) <= 0) {
+                alert("Vnesi veljavno vsoto stave.");
+                return;
+            }
+    
+            fetch(`/realroletaGet?choice=${choice}&bet=${bet}`)
+                .then(res => {
+                    if (!res.ok) return res.json().then(err => { throw err; });
+                    return res.json();
+                })
                 .then(data => {
                     const resEl = document.getElementById("result");
                     resEl.innerHTML = `
                         <strong>Izžrebana številka:</strong> ${data.number} <br>
                         <strong>Tvoja izbira:</strong> ${data.choice} <br>
-                        <strong>Rezultat:</strong> ${data.result === "WIN" ? "ZMAGAL SI!" : "IZGUBIL SI!"}
+                        <strong>Rezultat:</strong> ${data.result === "WIN" ? "ZMAGAL SI!" : "IZGUBIL SI!"} <br>
+                        <strong>Trenutno stanje:</strong> ${data.new_balance} €
                     `;
                 })
                 .catch(err => {
-                    document.getElementById("result").innerText = "Napaka pri pošiljanju zahteve.";
+                    const resEl = document.getElementById("result");
+                    resEl.innerHTML = `<span style="color: red;">Napaka: ${err.error || "Napaka pri pošiljanju zahteve."}</span>`;
                     console.error(err);
                 });
         }
     </script>
+    
 </body>
 </html>
