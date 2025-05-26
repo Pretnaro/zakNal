@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <title>Blackjack</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: green; color: white; text-align: center; }
+        .card { display: inline-block; margin: 10px; padding: 20px; background: white; color: black; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Blackjack</h1>
+    <div id="dealer-area">
+        <h2>Dealer</h2>
+        <div id="dealer-cards"></div>
+    </div>
+
+    <div id="player-area">
+        <h2>Tvoje karte</h2>
+        <div id="player-cards"></div>
+    </div>
+
+    <div>
+        <button onclick="hit()">Hit</button>
+        <button onclick="stand()">Stand</button>
+        <button onclick="resetGame()">Reset</button>
+    </div>
+
+    <h3 id="status"></h3>
+    <a href="/kazalo">INDEX</a>
+    <script>
+        let playerCards = [];
+        let dealerCards = [];
+
+        function getRandomCard() {
+            return Math.floor(Math.random() * 11) + 1;
+        }
+
+        function sum(cards) {
+            return cards.reduce((a, b) => a + b, 0);
+        }
+
+        function startGame(){
+            playerCards = [getRandomCard(), getRandomCard()];
+            dealerCards = [getRandomCard(), getRandomCard()];
+            updateUI();
+        }
+
+        function updateUI(){
+            document.getElementById('player-cards').innerHTML = playerCards.map(card => `<div class="card">${card}</div>`).join("");
+            document.getElementById('dealer-cards').innerHTML = dealerCards.map(card => `<div class="card">${card}</div>`).join("");
+        }
+
+        function hit(){
+            playerCards.push(getRandomCard());
+            updateUI();
+            checkStatus();
+        }
+
+        function stand(){
+            while(sum(dealerCards) < 17){
+                dealerCards.push(getRandomCard());
+            }
+            updateUI();
+            checkStatus(true);
+        }
+
+        function checkStatus(ended=false){
+            let playerSum = sum(playerCards);
+            let dealerSum = sum(dealerCards);
+
+            if(playerSum > 21){
+                document.getElementById('status').innerText = "Bust! Izgubil si.";
+            } else if(ended){
+                if(dealerSum > 21 || playerSum > dealerSum){
+                    document.getElementById('status').innerText = "Zmagal si!";
+                } else if(playerSum === dealerSum){
+                    document.getElementById('status').innerText = "Izenačeno!";
+                } else {
+                    document.getElementById('status').innerText = "Izgubil si.";
+                }
+            }
+        }
+
+        function resetGame(){
+            playerCards = [];
+            dealerCards = [];
+            document.getElementById('status').innerText = "";
+            startGame();
+        }
+
+        // Init
+        startGame();
+    </script>
+
+</body>
+<script>
+
+</script>
+</html>

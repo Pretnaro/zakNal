@@ -2,14 +2,500 @@
 <html lang="en">
 <head>
     <title>HORSE RACES</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2d5016, #4a7c29);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 0;
+            color: #ffd700;
+        }
+
+        .betting-section {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bet-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .horse-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .horse-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .horse-btn.horse-1 { background: #ff4444; color: white; }
+        .horse-btn.horse-2 { background: #44ff44; color: black; }
+        .horse-btn.horse-3 { background: #4444ff; color: white; }
+        .horse-btn.horse-4 { background: #ffff44; color: black; }
+        .horse-btn.horse-5 { background: #ff44ff; color: white; }
+
+        .horse-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .horse-btn.selected {
+            box-shadow: 0 0 15px rgba(255,255,255,0.8);
+            transform: scale(1.1);
+        }
+
+        .bet-amount {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100px;
+        }
+
+        .start-race-btn {
+            padding: 15px 30px;
+            background: #ffd700;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .start-race-btn:hover {
+            background: #ffed4e;
+            transform: scale(1.05);
+        }
+
+        .start-race-btn:disabled {
+            background: #666;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .track {
+            background: #8B4513;
+            border: 5px solid #654321;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lane {
+            height: 60px;
+            border-bottom: 2px dashed #654321;
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .horse {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+            left: 0;
+            transition: left 0.1s linear;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .horse-1 { background: #ff4444; }
+        .horse-2 { background: #44ff44; }
+        .horse-3 { background: #4444ff; }
+        .horse-4 { background: #ffff44; }
+        .horse-5 { background: #ff44ff; }
+
+        .finish-line {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background: repeating-linear-gradient(
+                0deg,
+                black 0px,
+                black 10px,
+                white 10px,
+                white 20px
+            );
+            z-index: 5;
+        }
+
+        .lane-number {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .info-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-box h3 {
+            margin-top: 0;
+            color: #ffd700;
+        }
+
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+
+        .race-result {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .race-result.win {
+            background: rgba(34, 197, 94, 0.3);
+            color: #4ade80;
+        }
+
+        .race-result.lose {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+
+        .countdown {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .odds {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .odds-item {
+            text-align: center;
+        }
+
+        .odds-value {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: #ffed4e;
+        }
+    </style>
 </head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <body>
-    
-    
-    <a href="/kazalo">INDEX</a>
-</body>
-<script>
+    <div class="container">
+        <div class="header">
+            <h1>🐎 HORSE RACES 🐎</h1>
+            <a href="/kazalo">INDEX</a>
+        </div>
 
-</script>
+        <div class="betting-section">
+            <div class="bet-controls">
+                <span>Select Horse:</span>
+                <div class="horse-selector">
+                    <button class="horse-btn horse-1" data-horse="1">Red</button>
+                    <button class="horse-btn horse-2" data-horse="2">Green</button>
+                    <button class="horse-btn horse-3" data-horse="3">Blue</button>
+                    <button class="horse-btn horse-4" data-horse="4">Yellow</button>
+                    <button class="horse-btn horse-5" data-horse="5">Pink</button>
+                </div>
+            </div>
+            
+            <div class="bet-controls">
+                <span>Bet Amount: $</span>
+                <input type="number" class="bet-amount" id="betAmount" min="1" max="1000" value="10">
+            </div>
+            
+            <button class="start-race-btn" id="startRace">START RACE!</button>
+        </div>
+
+        <div class="countdown" id="countdown"></div>
+
+        <div class="track" id="track">
+            <div class="finish-line"></div>
+            <div class="lane">
+                <span class="lane-number">1</span>
+                <div class="horse horse-1" data-horse="1"></div>
+            </div>
+            <div class="lane">
+                <span class="lane-number">2</span>
+                <div class="horse horse-2" data-horse="2"></div>
+            </div>
+            <div class="lane">
+                <span class="lane-number">3</span>
+                <div class="horse horse-3" data-horse="3"></div>
+            </div>
+            <div class="lane">
+                <span class="lane-number">4</span>
+                <div class="horse horse-4" data-horse="4"></div>
+            </div>
+            <div class="lane">
+                <span class="lane-number">5</span>
+                <div class="horse horse-5" data-horse="5"></div>
+            </div>
+        </div>
+
+        <div class="race-result" id="raceResult"></div>
+
+        <div class="info-panel">
+            <div class="info-box">
+                <h3>Your Balance</h3>
+                <div class="balance" id="balance">$1000</div>
+            </div>
+            
+            <div class="info-box">
+                <h3>Current Bet</h3>
+                <div id="currentBet">No bet placed</div>
+            </div>
+            
+            <div class="info-box">
+                <h3>Racing Odds</h3>
+                <div class="odds">
+                    <div class="odds-item">
+                        <div>Red</div>
+                        <div class="odds-value">2.1x</div>
+                    </div>
+                    <div class="odds-item">
+                        <div>Green</div>
+                        <div class="odds-value">2.3x</div>
+                    </div>
+                    <div class="odds-item">
+                        <div>Blue</div>
+                        <div class="odds-value">1.8x</div>
+                    </div>
+                    <div class="odds-item">
+                        <div>Yellow</div>
+                        <div class="odds-value">2.5x</div>
+                    </div>
+                    <div class="odds-item">
+                        <div>Pink</div>
+                        <div class="odds-value">2.0x</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3>Last Race Winner</h3>
+                <div id="lastWinner">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 1000;
+        let selectedHorse = null;
+        let betAmount = 10;
+        let racing = false;
+        
+        const horses = ['Red', 'Green', 'Blue', 'Yellow', 'Pink'];
+        const odds = [2.1, 2.3, 1.8, 2.5, 2.0];
+        
+        // Horse selection
+        $('.horse-btn').click(function() {
+            $('.horse-btn').removeClass('selected');
+            $(this).addClass('selected');
+            selectedHorse = parseInt($(this).data('horse'));
+            updateCurrentBet();
+        });
+        
+        // Bet amount change
+        $('#betAmount').on('input', function() {
+            betAmount = parseInt($(this).val()) || 0;
+            updateCurrentBet();
+        });
+        
+        function updateCurrentBet() {
+            if (selectedHorse && betAmount > 0) {
+                const horseName = horses[selectedHorse - 1];
+                const potential = Math.floor(betAmount * odds[selectedHorse - 1]);
+                $('#currentBet').html(`$${betAmount} on ${horseName}<br>Potential win: $${potential}`);
+            } else {
+                $('#currentBet').text('No bet placed');
+            }
+        }
+        
+        function updateBalance() {
+            $('#balance').text(`$${balance}`);
+        }
+        
+        function resetRace() {
+            $('.horse').css('left', '0px');
+            $('#raceResult').hide();
+            racing = false;
+            $('#startRace').prop('disabled', false);
+        }
+        
+        function startCountdown() {
+            let count = 3;
+            $('#countdown').show().text(count);
+            
+            const countInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    $('#countdown').text(count);
+                } else if (count === 0) {
+                    $('#countdown').text('GO!');
+                } else {
+                    $('#countdown').hide();
+                    clearInterval(countInterval);
+                    runRace();
+                }
+            }, 1000);
+        }
+        
+        function runRace() {
+            const trackWidth = $('#track').width() - 50;
+            const horses = $('.horse');
+            const positions = [0, 0, 0, 0, 0];
+            let finished = [];
+            
+            const raceInterval = setInterval(() => {
+                horses.each(function(index) {
+                    // Random speed for each horse (with slight bias for different horses)
+                    const speed = Math.random() * 8 + 2 + (Math.random() - 0.5) * 2;
+                    positions[index] += speed;
+                    
+                    $(this).css('left', positions[index] + 'px');
+                    
+                    // Check if horse finished
+                    if (positions[index] >= trackWidth && !finished.includes(index + 1)) {
+                        finished.push(index + 1);
+                    }
+                });
+                
+                // Race is over when we have a winner
+                if (finished.length > 0) {
+                    clearInterval(raceInterval);
+                    endRace(finished[0]);
+                }
+            }, 50);
+        }
+        
+        function endRace(winner) {
+            racing = false;
+            const winnerName = horses[winner - 1];
+            $('#lastWinner').text(winnerName);
+            
+            let resultText = `🏆 ${winnerName} wins! 🏆`;
+            let resultClass = 'lose';
+            
+            if (selectedHorse === winner) {
+                const winAmount = Math.floor(betAmount * odds[winner - 1]);
+                balance += winAmount - betAmount;
+                resultText += `<br>You won $${winAmount}!`;
+                resultClass = 'win';
+            } else if (selectedHorse) {
+                balance -= betAmount;
+                resultText += `<br>You lost $${betAmount}`;
+            }
+            
+            $('#raceResult').removeClass('win lose').addClass(resultClass).html(resultText).show();
+            updateBalance();
+            
+            // Reset for next race after 3 seconds
+            setTimeout(() => {
+                resetRace();
+            }, 3000);
+        }
+        
+        $('#startRace').click(function() {
+            if (racing) return;
+            
+            if (!selectedHorse) {
+                alert('Please select a horse to bet on!');
+                return;
+            }
+            
+            if (betAmount <= 0 || betAmount > balance) {
+                alert('Invalid bet amount!');
+                return;
+            }
+            
+            racing = true;
+            $(this).prop('disabled', true);
+            resetRace();
+            startCountdown();
+        });
+        
+        // Initialize
+        updateBalance();
+        resetRace();
+    </script>
+</body>
 </html>

@@ -644,211 +644,110 @@ def realblackjack():
     return render_template("realblackjack.html")
 
 
-#PODATKOVNI ROUTE BLACKJACK
-@app.route("/realblackjackGet")
+# PODATKOVNI ROUTE BLACKJACK
+@app.route("/realblackjackGet", methods=["GET", "POST"])
 def getRealBlackjack():
-    #BET INPUT
-    balance = 1000
-    print(f"Your balance is: {balance}")
-    bet = int(input("Input bet: "))
-    balance -= bet
-    print(f"Your new balance is: {balance}")
-    #SEZNAM Z ŠTEVILKAMI 
-    numbers = [str(i) for i in range(10001)]
-    #DELJENJE KART
-    #DEALER
-    dealerCard1 = random.randrange(1, 12)
-    dealerCard2 = random.randrange(1, 12)
-    #PLAYER
-    playerCard1 = random.randrange(1, 12)
-    playerCard2 = random.randrange(1, 12)
-    #RETURN
-    print(f"Dealer Card: {dealerCard1}")
-    print("---------------------------")
-    print(f"Player Card: {playerCard1}")
-    print(f"Player Card: {playerCard2}")
-    print("---------------------------")
-    while True: 
-        #PRVI IF
-        if playerCard1 + playerCard2 == 21:
-            print("AVTOMATSKI BLACKJACK")
-            print("You win")
-            break
-        #MIGHT BLACKJACK
-        if dealerCard1 == 11:
-            #INSURANCE
-            insurance = str(input("Dealer might have Blackjack, do you want to insure(Y/N): "))
-            if insurance == "Y":
-                vnosek = int(input("Input insurance: "))
-            elif insurance == "N":
-                pass
-            print(f"Second card was: {dealerCard2}")
-            if insurance == 0 and dealerCard1 + dealerCard2 == 21:
-                print("BUST")
-                break
-            #NI BLACKJACK(2x)
-            else:
-                vnosek += vnosek
-                balance += vnosek
-        else:
-            yourCards = playerCard1+playerCard2
-            #RETURN
-            print(f"Vsota tvojih cart: {yourCards}") 
-        #IZBIRA
-        #H = HIT
-        #D = DOUBLE DOWN
-        #P = PASS
-        #S = SPLIT
-        if playerCard1 == playerCard2:
-            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS, S = SPLIT): "))
-        else: 
-            choice = str(input("Choice(H = HIT, D = DOUBLE DOWN, P = PASS): "))
-    #--------------------------------------------------- 
-        #HIT GAME
-        if choice == "H" or choice == "h":
-            newCard = random.randrange(1, 12)
-            yourCards += newCard
-            print(f"Your new card was: {newCard}")
-            print(f"Your cards: {yourCards}")
-            if yourCards > 21:
-                print("BUST")
-                break
-            else:
-                pass
-            choice2 = str(input("S = Stop, H = Another: "))
-            if choice2  == "H" or choice2 == "h":
-                newCard2 = random.randrange(1, 12)
-                yourCards += newCard2
-                print(f"Your new card was: {newCard2}")
-                print(f"Your cards: {yourCards}")
-                if yourCards > 21:
-                    print("BUST")
-                    break
-                else:
-                    pass
-                choice3 = str(input("S = Stop, H = Another: "))
-                if choice3  == "H" or choice3 == "h":
-                    newCard2 = random.randrange(1, 12)
-                    yourCards += newCard2
-                    print(f"Your new card was: {newCard2}")
-                    print(f"Your cards: {yourCards}")
-                    if yourCards > 21:
-                        print("BUST")
-                        break
-                    else:
-                        pass
-                else:
-                    pass
-            else:
-                pass
-                
-        #RETURN 
-            print(yourCards)  
-    #---------------------------------------------------             
-        #DOUBE DOWN GAME
-        elif choice == "D" or choice == "d":
-            newCard = random.randrange(1, 12)
-            yourCards += newCard
-            print(f"Your new card was: {newCard}")
-            print(f"Your cards: {yourCards}")
-            if yourCards > 21:
-                print("BUST")
-                break
-            else:
-                pass
-    
-                    
-    #---------------------------------------------------                
-        #PASS GAME      
-        elif choice == "P" or choice == "p":
-            pass
-                
-    #---------------------------------------------------        
-        #SPLIT GAME
-        elif choice == "S" or choice == "s":
-            if playerCard1 == playerCard2:
-                playerCard1 += random.randrange(1, 12)
-                playerCard2 += random.randrange(1, 12)
-                if playerCard1 > 21:
-                    print("BUST")
-                elif playerCard2 > 21:
-                    print("BUST")
-                else:
-                    choice2 = str(input("1 for first new card, 2 for second new card, 3 for both new cards, 4 to stop"))
-                    if choice2 == "1":
-                        playerCard1 += random.randrange(1, 12)
-                        if playerCard1 > 21:
-                            print("BUST")
-                        else:
-                            #RETURN 
-                            print(playerCard1)
-                            print(playerCard2)
-                    elif choice2 == "2":
-                        playerCard1 += random.randrange(1, 12)
-                        if playerCard1 > 21:
-                            print("BUST")
-                        else:
-                            #RETURN 
-                            print(playerCard1)
-                            print(playerCard2)
-                    elif choice2 == "3":
-                        playerCard1 += random.randrange(1, 12)
-                        playerCard2 += random.randrange(1, 12)
-                        if playerCard1 > 21 or playerCard2 > 21:
-                            print("BUST")
-                        else:
-                            #RETURN 
-                            print(playerCard1)
-                            print(playerCard2) 
-                    elif choice2 == "4":
-                        #RETURN 
-                        print(playerCard1)
-                        print(playerCard2) 
-            else:
-                print("NOT SAME CARDS")
-    #--------------------------------------------------- 
-        #RESULTS
-        print(f"Dealers cards are {dealerCard1} and {dealerCard2}")
-        dealerCards = dealerCard1+dealerCard2
-        print(f"Dealers cards are {dealerCards}")
-        if choice == "H" or choice == "P" or choice == "D":
-            while dealerCards < 16:
-                newDealerCard = random.randrange(1, 12)
-                print(f"Delare got: {newDealerCard}")
-                dealerCards += newDealerCard
-                print(f"Dealers cards are {dealerCards}")
-                if dealerCards > 21:
-                    print("YOU WIN")
-                    break
-                else:
-                    pass
-            if dealerCards > yourCards:
-                print("You lost")
-                break
-            elif dealerCards == yourCards:
-                print("DRAW")
-                balance += bet
-                break
-            else:
-                print("You won")
-                balance += bet*2
-                break
-        elif choice == "S":
-            while dealerCards < 16:
-                dealerCards += random.randrange(1, 12)
-                print()
-                if dealerCards > 21:
-                    print("DEALER BUSTED")
-                elif dealerCards < yourCard1 and dealerCards < playerCard2:
-                    print("DOUBLE")
-                elif dealerCards < playerCard1 and dealerCards > playerCard2:
-                    print("ONE")
-                elif dealerCards > playerCard2 and dealerCards > playerCard2:
-                    print("ONE")
-                elif dealerCards < playerCard2 and dealerCards < playerCard2:
-                    print("NONE")
-    print(f"Your new balance is: {balance}")  
+    # Ker ne moremo uporabljat input() v Flask route, vzamemo podatke iz URL ali JSON
+    if request.method == "GET":
+        bet = int(request.args.get("bet", 0))
+    else:
+        data = request.get_json()
+        bet = data.get("bet", 0)
 
+    if bet <= 0:
+        return jsonify({"error": "Neveljavna stava."}), 400
+
+    balance = 1000  # za testiranje, kasneje vzemi iz baze ali sessiona
+    if bet > balance:
+        return jsonify({"error": "Nimam dovolj balance."}), 400
+
+    balance -= bet
+
+    # DELJENJE KART
+    dealerCard1 = random.randint(1, 11)
+    dealerCard2 = random.randint(1, 11)
+    playerCard1 = random.randint(1, 11)
+    playerCard2 = random.randint(1, 11)
+
+    playerSum = playerCard1 + playerCard2
+    dealerSum = dealerCard1 + dealerCard2
+
+    # Poenostavljen izpis - vrni JSON, ker v Flasku ne printamo
+    result = {
+        "balance": balance,
+        "bet": bet,
+        "dealerCards": [dealerCard1, dealerCard2],
+        "playerCards": [playerCard1, playerCard2],
+        "message": "",
+        "status": "playing"
+    }
+
+    # Avtomatski blackjack
+    if playerSum == 21:
+        result["message"] = "AVTOMATSKI BLACKJACK - ZMAGAL SI"
+        result["status"] = "win"
+        result["balance"] += bet * 2
+        return jsonify(result)
+
+    # Dealer ima 11 - možno blackjack
+    if dealerCard1 == 11:
+        # Ker ni input, samo predpostavimo no insurance
+        # Če želiš, lahko v frontend dodaš klic za insurance
+        if dealerSum == 21:
+            result["message"] = "Dealer ima blackjack - IZGUBIL SI"
+            result["status"] = "lose"
+            return jsonify(result)
+        else:
+            # Dealer nima blackjacka, igraš naprej
+            result["message"] = "Dealer nima blackjacka, igra se nadaljuje"
+
+    # Vse OK, pošlji začetno stanje igre
+    return jsonify(result)
+
+
+# Dodaj še endpoint za akcije H, D, P, S (hit, double, pass, split)
+# Tukaj je poenostavljen primer za "hit"
+@app.route("/realblackjackAction", methods=["POST"])
+def realblackjackAction():
+    data = request.get_json()
+    action = data.get("action")
+    playerCards = data.get("playerCards", [])
+    bet = data.get("bet", 0)
+    balance = 1000  # za testiranje
+
+    if not playerCards:
+        return jsonify({"error": "Ni podanih kart."}), 400
+
+    if action == "H":  # HIT
+        newCard = random.randint(1, 11)
+        playerCards.append(newCard)
+        playerSum = sum(playerCards)
+        if playerSum > 21:
+            return jsonify({
+                "message": "BUST - Izgubil si",
+                "playerCards": playerCards,
+                "status": "lose",
+                "balance": balance
+            })
+        else:
+            return jsonify({
+                "message": f"Nova karta: {newCard}, vsota: {playerSum}",
+                "playerCards": playerCards,
+                "status": "playing",
+                "balance": balance
+            })
+
+    elif action == "P":  # PASS/Stand - poenostavljeno tukaj brez dealer logike
+        return jsonify({
+            "message": "Igra se zaključi. Dealer igra...",
+            "playerCards": playerCards,
+            "status": "stand",
+            "balance": balance
+        })
+
+    # Implementiraj še ostale akcije po potrebi
+
+    return jsonify({"error": "Neznana akcija"}), 400
 
 # ROLETA
 @app.route("/realroleta")
