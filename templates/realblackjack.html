@@ -6,6 +6,7 @@
     <style>
         body { font-family: Arial, sans-serif; background: green; color: white; text-align: center; }
         .card { display: inline-block; margin: 10px; padding: 20px; background: white; color: black; border-radius: 10px; }
+        button { margin: 5px; padding: 10px 20px; font-size: 16px; }
     </style>
 </head>
 <body>
@@ -28,8 +29,8 @@
     </div>
 
     <div>
-        <button onclick="hit()">Hit</button>
-        <button onclick="stand()">Stand</button>
+        <button onclick="hit()" id="hitBtn">Hit</button>
+        <button onclick="stand()" id="standBtn">Stand</button>
         <button onclick="resetGame()">Reset</button>
     </div>
 
@@ -39,6 +40,7 @@
     <script>
         let playerCards = [];
         let dealerCards = [];
+        let gameOver = false;
 
         function sum(cards) {
             return cards.reduce((a, b) => a + b, 0);
@@ -49,8 +51,25 @@
             document.getElementById('dealer-cards').innerHTML = dealerCards.map(card => `<div class="card">${card}</div>`).join("");
         }
 
+        async function loadBalance() {
+            const res = await fetch("/realbalance");
+            const data = await res.json();
+            if (data.balance !== undefined) {
+                document.getElementById('balance').innerText = data.balance;
+            }
+        }
+
         async function startGame() {
+            if (gameOver === false && playerCards.length > 0) {
+                alert("Končaj igro ali pritisni Reset.");
+                return;
+            }
+
             const bet = parseInt(document.getElementById('bet').value);
+            if (isNaN(bet) || bet <= 0) {
+                alert("Vnesi veljavno stavo.");
+                return;
+            }
 
             const res = await fetch(`/realblackjackStart?bet=${bet}`);
             const data = await res.json();
@@ -64,16 +83,21 @@
             dealerCards = data.dealerCards;
             document.getElementById('balance').innerText = data.balance;
             document.getElementById('status').innerText = "";
+            gameOver = false;
             updateUI();
         }
 
         function hit() {
+            if (gameOver) return;
+
             playerCards.push(Math.floor(Math.random() * 11) + 1);
             updateUI();
             checkStatus();
         }
 
         function stand() {
+            if (gameOver) return;
+
             while (sum(dealerCards) < 17) {
                 dealerCards.push(Math.floor(Math.random() * 11) + 1);
             }
@@ -88,7 +112,9 @@
                 body: JSON.stringify({ outcome })
             });
             const data = await res.json();
-            document.getElementById('balance').innerText = data.balance;
+            if (data.balance !== undefined) {
+                document.getElementById('balance').innerText = data.balance;
+            }
         }
 
         function checkStatus(ended = false) {
@@ -98,6 +124,7 @@
             if (playerSum > 21) {
                 document.getElementById('status').innerText = "Bust! Izgubil si.";
                 reportResult("lose");
+                gameOver = true;
             } else if (ended) {
                 if (dealerSum > 21 || playerSum > dealerSum) {
                     document.getElementById('status').innerText = "Zmagal si!";
@@ -109,16 +136,21 @@
                     document.getElementById('status').innerText = "Izgubil si.";
                     reportResult("lose");
                 }
+                gameOver = true;
             }
         }
 
         function resetGame() {
             playerCards = [];
             dealerCards = [];
+            gameOver = false;
             document.getElementById('status').innerText = "";
             document.getElementById('player-cards').innerHTML = "";
             document.getElementById('dealer-cards').innerHTML = "";
         }
+
+        // Load initial balance on page load
+        window.onload = loadBalance;
     </script>
 </body>
 </html>

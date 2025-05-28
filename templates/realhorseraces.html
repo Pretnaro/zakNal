@@ -1,15 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HORSE RACES</title>
-</head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<body>
-    
-    
-    <a href="/realkazalo">INDEX</a>
-</body>
-<script>
+    <title>Horse Race Betting</title>
+    <style>
+        .track {
+            position: relative;
+            width: 100%;
+            height: 30px;
+            background-color: #f0f0f0;
+            margin-bottom: 10px;
+        }
 
-</script>
+        .horse {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 0;
+        }
+
+        #results, #balanceDisplay {
+            font-size: 18px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Horse Race – Bet on a dot!</h2>
+<p>
+    Your horse (0–4): <input type="number" id="chosen" min="0" max="4"><br>
+    Stake: <input type="number" id="stake" min="1"><br>
+    <button onclick="startRace()">Start Race</button>
+</p>
+<div id="balanceDisplay">Balance: loading...</div>
+<div id="tracks"></div>
+<div id="results"></div>
+
+
+
+</body>
 </html>

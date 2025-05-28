@@ -569,6 +569,17 @@ def getUpperlower():
             break
     return jsonify(result=result, numbers=[img_map[card1], img_map[card2], img_map[card3], img_map[card4] ])
 
+@app.route("/getbalance")
+def get_balance():
+    user_id = request.args.get("user_id")
+    with open("realuser.json", "r") as f:
+        data = json.load(f)
+
+    user = data.get("uporabniki", {}).get(user_id)
+    if not user:
+        return jsonify({"error": "User not found", "balance": 0})
+
+    return jsonify({"balance": user.get("balance", 0)})
 
 #SLOTS
 @app.route("/realslots")
@@ -638,116 +649,80 @@ def getRealSlots():
 
 
 
-#REAL BLACKJACK
 @app.route("/realblackjack")
 def realblackjack():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     return render_template("realblackjack.html")
 
+@app.route("/realbalance")
+def realbalance():
+    if 'username' not in session:
+        return jsonify({"error": "Ni prijave"}), 401
+    user = realusers.get(User.username == session['username'])
+    if user:
+        return jsonify({"balance": user.get("balance", 0)})
+    return jsonify({"error": "Uporabnik ne obstaja"}), 404
 
-# PODATKOVNI ROUTE BLACKJACK
-@app.route("/realblackjackGet", methods=["GET", "POST"])
-def getRealBlackjack():
-    # Ker ne moremo uporabljat input() v Flask route, vzamemo podatke iz URL ali JSON
-    if request.method == "GET":
-        bet = int(request.args.get("bet", 0))
-    else:
-        data = request.get_json()
-        bet = data.get("bet", 0)
+@app.route("/realblackjackStart")
+def realblackjack_start():
+    if 'username' not in session:
+        return jsonify({"error": "Ni prijave"}), 401
 
-    if bet <= 0:
-        return jsonify({"error": "Neveljavna stava."}), 400
+    bet = int(request.args.get("bet", 0))
+    user = realusers.get(User.username == session['username'])
 
-    balance = 1000  # za testiranje, kasneje vzemi iz baze ali sessiona
-    if bet > balance:
-        return jsonify({"error": "Nimam dovolj balance."}), 400
+    if not user:
+        return jsonify({"error": "Uporabnik ne obstaja"}), 404
+
+    balance = user.get("balance", 0)
+
+    if bet <= 0 or bet > balance:
+        return jsonify({"error": "Neveljavna stava"}), 400
 
     balance -= bet
+    realusers.update({"balance": balance}, User.username == session['username'])
 
-    # DELJENJE KART
-    dealerCard1 = random.randint(1, 11)
-    dealerCard2 = random.randint(1, 11)
-    playerCard1 = random.randint(1, 11)
-    playerCard2 = random.randint(1, 11)
+    playerCards = [random.randint(1, 11), random.randint(1, 11)]
+    dealerCards = [random.randint(1, 11)]
 
-    playerSum = playerCard1 + playerCard2
-    dealerSum = dealerCard1 + dealerCard2
+    session["playerCards"] = playerCards
+    session["dealerCards"] = dealerCards
+    session["bet"] = bet
 
-    # Poenostavljen izpis - vrni JSON, ker v Flasku ne printamo
-    result = {
-        "balance": balance,
-        "bet": bet,
-        "dealerCards": [dealerCard1, dealerCard2],
-        "playerCards": [playerCard1, playerCard2],
-        "message": "",
-        "status": "playing"
-    }
+    return jsonify({
+        "playerCards": playerCards,
+        "dealerCards": dealerCards,
+        "balance": balance
+    })
 
-    # Avtomatski blackjack
-    if playerSum == 21:
-        result["message"] = "AVTOMATSKI BLACKJACK - ZMAGAL SI"
-        result["status"] = "win"
-        result["balance"] += bet * 2
-        return jsonify(result)
+@app.route("/realblackjackResult", methods=["POST"])
+def realblackjack_result():
+    if 'username' not in session:
+        return jsonify({"error": "Ni prijave"}), 401
 
-    # Dealer ima 11 - možno blackjack
-    if dealerCard1 == 11:
-        # Ker ni input, samo predpostavimo no insurance
-        # Če želiš, lahko v frontend dodaš klic za insurance
-        if dealerSum == 21:
-            result["message"] = "Dealer ima blackjack - IZGUBIL SI"
-            result["status"] = "lose"
-            return jsonify(result)
-        else:
-            # Dealer nima blackjacka, igraš naprej
-            result["message"] = "Dealer nima blackjacka, igra se nadaljuje"
-
-    # Vse OK, pošlji začetno stanje igre
-    return jsonify(result)
-
-
-# Dodaj še endpoint za akcije H, D, P, S (hit, double, pass, split)
-# Tukaj je poenostavljen primer za "hit"
-@app.route("/realblackjackAction", methods=["POST"])
-def realblackjackAction():
     data = request.get_json()
-    action = data.get("action")
-    playerCards = data.get("playerCards", [])
-    bet = data.get("bet", 0)
-    balance = 1000  # za testiranje
+    outcome = data.get("outcome")  # "win", "lose", "draw"
+    user = realusers.get(User.username == session['username'])
 
-    if not playerCards:
-        return jsonify({"error": "Ni podanih kart."}), 400
+    if not user:
+        return jsonify({"error": "Uporabnik ne obstaja"}), 404
 
-    if action == "H":  # HIT
-        newCard = random.randint(1, 11)
-        playerCards.append(newCard)
-        playerSum = sum(playerCards)
-        if playerSum > 21:
-            return jsonify({
-                "message": "BUST - Izgubil si",
-                "playerCards": playerCards,
-                "status": "lose",
-                "balance": balance
-            })
-        else:
-            return jsonify({
-                "message": f"Nova karta: {newCard}, vsota: {playerSum}",
-                "playerCards": playerCards,
-                "status": "playing",
-                "balance": balance
-            })
+    balance = user.get("balance", 0)
+    bet = session.get("bet", 0)
 
-    elif action == "P":  # PASS/Stand - poenostavljeno tukaj brez dealer logike
-        return jsonify({
-            "message": "Igra se zaključi. Dealer igra...",
-            "playerCards": playerCards,
-            "status": "stand",
-            "balance": balance
-        })
+    if outcome == "win":
+        balance += bet * 2
+    elif outcome == "draw":
+        balance += bet
+    elif outcome == "lose":
+        pass
+    else:
+        return jsonify({"error": "Neveljaven rezultat"}), 400
 
-    # Implementiraj še ostale akcije po potrebi
+    realusers.update({"balance": balance}, User.username == session['username'])
+    return jsonify({"balance": balance})
 
-    return jsonify({"error": "Neznana akcija"}), 400
 
 # ROLETA
 @app.route("/realroleta")
@@ -951,6 +926,70 @@ def real_upperlower_win():
 
     return jsonify(prize=prize, balance=round(new_balance, 2))
 
+#HORSE RACES
+@app.route("/realhorseraces")
+def realhorseraces():
+    return render_template("realhorseraces.html")
+
+@app.route("/realhorceracesGet")
+def getrealHorseraces():
+    if 'username' not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    chosen = request.args.get("chosen")
+    stake = request.args.get("stake")
+
+    if chosen is None or stake is None:
+        return jsonify({"error": "Missing parameters"}), 400
+
+    try:
+        chosen = int(chosen)
+        stake = float(stake)
+    except ValueError:
+        return jsonify({"error": "Invalid parameters"}), 400
+
+    username = session["username"]
+
+    with open("realuser.json", "r") as f:
+        data = json.load(f)
+
+    uporabniki = data.get("uporabniki", {})
+
+    user_id = None
+    for uid, user in uporabniki.items():
+        if user["username"] == username:
+            user_id = uid
+            break
+
+    if not user_id:
+        return jsonify({"error": "User not found"}), 404
+
+    user = uporabniki[user_id]
+    balance = user.get("balance", 0)
+
+    if stake > balance:
+        return jsonify({"error": "Not enough balance", "balance": balance}), 400
+
+    winner = random.randint(0, 4)
+
+    if chosen == winner:
+        balance += stake
+        result = "YOU WIN"
+    else:
+        balance -= stake
+        result = "YOU LOSE"
+
+    user["balance"] = balance
+    data["uporabniki"][user_id] = user
+
+    with open("realuser.json", "w") as f:
+        json.dump(data, f, indent=4)
+
+    return jsonify({
+        "result": result,
+        "winner": winner,
+        "balance": balance
+    })
 
 
 app.run(debug = True)
